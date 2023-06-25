@@ -1,7 +1,11 @@
 plugins {
     id 'com.android.library'
     id 'org.jetbrains.kotlin.android'
+    //发布库相关插件
+    id 'maven-publish' //gradle 6.2 之后必须使用 maven-publish
 }
+apply from: 'maven.gradle'
+
 
 android {
     namespace 'com.xieql.lib.logger'
@@ -31,10 +35,9 @@ android {
 }
 
 dependencies {
-
+    // Kotlin 扩展库
     implementation 'androidx.core:core-ktx:1.7.0'
-    implementation 'androidx.appcompat:appcompat:1.4.1'
-    implementation 'com.google.android.material:material:1.5.0'
+    //测试使用
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
