@@ -55,6 +55,7 @@ internal class LogPrinter() : Printer {
 internal object PrintHelper{
     //打印到控制台
     fun log2Console(logLevel: LogLevel, tag: String, message: String) {
+        debugLog("输出到控制台")
         when (logLevel) {
             LogLevel.V -> Log.v(tag, message)
             LogLevel.D -> Log.d(tag, message)
@@ -85,8 +86,8 @@ internal object PrintHelper{
                 LogUtils.v("print","空间不足，不输出日志")
                 return
             }
-
         }
+        debugLog("写入输入日志到文件")
 
         executePool()
         val msg = FormatHelper.getFileFormatMsg(logLevel,message,element)

@@ -3,6 +3,7 @@ package com.xieql.lib.logger.core
 import android.content.ContentValues
 import android.os.Build
 import androidx.annotation.VisibleForTesting
+import com.jakewharton.threetenabp.AndroidThreeTen
 import com.xieql.lib.logger.core.Logger.Companion.ANONYMOUS_CLASS
 import com.xieql.lib.logger.core.Logger.Companion.MAX_TAG_LENGTH
 import com.xieql.lib.logger.core.LoggerMetaData.Companion.DIR_NAME
@@ -13,12 +14,19 @@ import com.xieql.lib.logger.core.LoggerMetaData.Companion.SEGMENT
 import com.xieql.lib.logger.core.LoggerMetaData.Companion.STORE_IN_SD_CARD
 import com.xieql.lib.logger.core.LoggerMetaData.Companion.UPLOAD_TOKEN
 import com.xieql.lib.logger.msg
+import com.xieql.lib.logger.utils.debugLog
 import java.io.PrintWriter
 import java.io.StringWriter
 import java.util.logging.Logger
 import java.util.regex.Pattern
 
 class Logger(val name: String, val packageLevel: Int = 0) {
+
+    init {
+        //初始化时间库
+        AndroidThreeTen.init(appCtx)
+    }
+
     var outputToConsole = true
     var outputToFile = true
     var outputThrowableStacktrace = false
@@ -318,13 +326,13 @@ class Logger(val name: String, val packageLevel: Int = 0) {
         vararg args: Any?
     ) {
         val msg = prepareMessage(t, message, args = args)
-        val element = logElement(packageLevel)
-        val tag = element.getTag()
+        val element = logElement(packageLevel)  //获取打印日志的位置
+        val tag = element.getTag()  //获取打印日志的类
 
         if (outputToConsole) {
             printer.printToConsole(logLevel, tag, msg, element)
         }
-
+        debugLog("输出到文件条件:${outputToFile},${logFilter.contains(logLevel)}")
         val outputToFile = outputToFile && logFilter.contains(logLevel)
 
         if (outputToFile) {

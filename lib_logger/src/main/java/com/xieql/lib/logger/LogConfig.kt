@@ -2,6 +2,7 @@ package com.xieql.lib.logger
 
 import com.xieql.lib.logger.core.*
 import com.xieql.lib.logger.core.appCtx
+import com.xieql.lib.logger.utils.debugLog
 import java.io.File
 
 /**
@@ -36,6 +37,7 @@ class LogConfig{
     fun init(): Logger {
         logger = Logger(builder.name,builder.packageLevel).apply {
             outputToConsole = builder.outputToConsole
+            debugLog("builder.outputToFile=${builder.outputToFile}")
             outputToFile = builder.outputToFile
             storeInSdCard = builder.storeInSdCard
             logDir = builder.logDir
@@ -67,7 +69,6 @@ class LogConfig{
     fun setSN(sn: String){
          builder.sn = sn
     }
-
 
     fun getMaxLogNum():Int{
         return builder.maxLogNum
@@ -144,6 +145,7 @@ class LogConfig{
         }
 
         fun setOutputToFile(outputToFile: Boolean):Builder{
+            debugLog("outputToFile=${outputToFile}")
             this.outputToFile = outputToFile
             return this
         }

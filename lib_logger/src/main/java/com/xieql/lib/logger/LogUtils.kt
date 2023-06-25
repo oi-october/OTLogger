@@ -2,6 +2,7 @@ package com.xieql.lib.logger
 
 import android.app.Application
 import com.xieql.lib.logger.core.LogLevel
+import com.xieql.lib.logger.core.appCtx
 
 object LogUtils {
 
