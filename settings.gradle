@@ -30,3 +30,4 @@ dependencyResolutionManagement {
 rootProject.name = "Android-Logger"
 include ':app'
 include ':lib_fcLogger'
+include ':lib_logger'
