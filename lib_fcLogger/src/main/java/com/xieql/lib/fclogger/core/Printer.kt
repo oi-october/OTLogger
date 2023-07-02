@@ -1,13 +1,17 @@
-package com.xieql.lib.logger.core
+package com.xieql.lib.fclogger.core
 
 import android.os.Environment
 import android.util.Log
 import androidx.annotation.StringRes
 import androidx.annotation.VisibleForTesting
-import com.xieql.lib.logger.core.Logger.Companion.MAX_LOG_LENGTH
+import com.xieql.lib.fclogger.core.Logger.Companion.MAX_LOG_LENGTH
+import com.xieql.lib.logger.core.appCtx
+import com.xieql.lib.logger.core.dateStr
+import com.xieql.lib.logger.core.now
+import com.xieql.lib.logger.core.nowStr
 import com.xieql.lib.logger.unexpectedValue
-import com.xieql.lib.logger.utils.create
-import com.xieql.lib.logger.utils.isExist
+import com.xieql.lib.fclogger.utils.create
+import com.xieql.lib.fclogger.utils.isExist
 import java.io.File
 import java.util.concurrent.LinkedBlockingDeque
 import java.util.concurrent.SynchronousQueue
@@ -33,7 +37,7 @@ interface Printer {
         element: StackTraceElement,
         logDir: String,
         logPrefix: String,
-        logSegment:LogSegment
+        logSegment: LogSegment
     )
 }
 

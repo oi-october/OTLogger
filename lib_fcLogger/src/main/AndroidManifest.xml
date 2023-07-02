@@ -6,7 +6,7 @@
 
     <application>
         <provider
-            android:name="com.xieql.lib.logger.core.LoggerProvider"
+            android:name="com.xieql.lib.logger.com.xieql.lib.fclogger.core.LoggerProvider"
             android:authorities="${applicationId}.provider.LoggerProvider"
             android:exported="false" />
     </application>

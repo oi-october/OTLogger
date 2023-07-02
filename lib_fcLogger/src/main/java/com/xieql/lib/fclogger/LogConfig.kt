@@ -1,8 +1,12 @@
-package com.xieql.lib.logger
+package com.xieql.lib.fclogger
 
+import com.xieql.lib.fclogger.core.LogLevel
+import com.xieql.lib.fclogger.core.LogSegment
+import com.xieql.lib.fclogger.core.Logger
+import com.xieql.lib.fclogger.core.Printer
 import com.xieql.lib.logger.core.*
 import com.xieql.lib.logger.core.appCtx
-import com.xieql.lib.logger.utils.debugLog
+import com.xieql.lib.fclogger.utils.debugLog
 import java.io.File
 
 /**
@@ -58,7 +62,7 @@ class LogConfig{
         return logger
     }
 
-    fun getCrashListener():CrashListener?{
+    fun getCrashListener(): CrashListener?{
         return crashListener
     }
 
@@ -74,11 +78,11 @@ class LogConfig{
         return builder.maxLogNum
     }
 
-    fun getLogReporter():LogReporter?{
+    fun getLogReporter(): LogReporter?{
         return builder.reporter
     }
 
-    fun getBugReporter():BugReporter?{
+    fun getBugReporter(): BugReporter?{
         return builder.bugReporter
     }
 
@@ -113,99 +117,99 @@ class LogConfig{
          internal var logSegment = LogSegment.ONE_HOUR //存储片段
          internal var logPrefix = ""  //文件头部标识
          internal lateinit var printer: Printer //日志输出者
-         internal var reporter:LogReporter?= null  //日志上报者
+         internal var reporter: LogReporter?= null  //日志上报者
          internal var outputThrowableStacktrace:Boolean = true //是否输出堆栈信息
          internal var crashListener: CrashListener? = null // 监听异常信息
          internal var sn = "sn-default"   // 设备SN 号码
          internal var maxLogNum = 24 * 7  //日志文件最多数量，保持7天数据
-         internal var bugReporter:BugReporter? = null
+         internal var bugReporter: BugReporter? = null
          internal var restartAppIfError = true //发生错误是否重启
          internal var countlyAppKey = "" //countly app key
 
 
-        fun build():LogConfig{
+        fun build(): LogConfig {
             val helper =  LogConfig(this)
             printer = LogPrinter()
             return helper
         }
 
-        fun setName(name:String):Builder{
+        fun setName(name:String): Builder {
             this.name = name
             return this
         }
 
-        fun setLevel(packageLevel:Int):Builder{
+        fun setLevel(packageLevel:Int): Builder {
             this.packageLevel = packageLevel
             return this
         }
 
-        fun setOutputToConsole(outputToConsole:Boolean):Builder{
+        fun setOutputToConsole(outputToConsole:Boolean): Builder {
             this.outputToConsole = outputToConsole
             return this
         }
 
-        fun setOutputToFile(outputToFile: Boolean):Builder{
+        fun setOutputToFile(outputToFile: Boolean): Builder {
             debugLog("outputToFile=${outputToFile}")
             this.outputToFile = outputToFile
             return this
         }
 
-        fun setStoreInSdCard(storeInSdCard:Boolean):Builder{
+        fun setStoreInSdCard(storeInSdCard:Boolean): Builder {
             this.storeInSdCard = storeInSdCard
             return this
         }
 
-        fun setLogDir(logDir:String):Builder{
+        fun setLogDir(logDir:String): Builder {
             this.logDir = logDir
             return this
         }
 
-        fun setLogSegment(logSegment:LogSegment):Builder{
+        fun setLogSegment(logSegment: LogSegment): Builder {
             this.logSegment = logSegment
             return this
         }
 
-        fun setLogPrefix(logPrefix:String):Builder{
+        fun setLogPrefix(logPrefix:String): Builder {
             this.logPrefix = logPrefix
             return this
         }
 
-        fun setPrinter(printer:Printer):Builder{
+        fun setPrinter(printer: Printer): Builder {
             this.printer = printer
             return this
         }
 
-        fun setReporter(reporter: LogReporter):Builder{
+        fun setReporter(reporter: LogReporter): Builder {
             this.reporter = reporter
             return this
         }
 
-        fun setCrashListener(crashListener: CrashListener?):Builder{
+        fun setCrashListener(crashListener: CrashListener?): Builder {
             this.crashListener = crashListener
             return this
         }
 
-        fun setSN(sn:String):Builder{
+        fun setSN(sn:String): Builder {
             this.sn = sn
             return this
         }
 
-        fun setMaxLogNum(maxLogNum:Int):Builder{
+        fun setMaxLogNum(maxLogNum:Int): Builder {
             this.maxLogNum = maxLogNum
             return this
         }
 
-        fun setBugReporter(bugReporter: BugReporter):Builder{
+        fun setBugReporter(bugReporter: BugReporter): Builder {
             this.bugReporter = bugReporter
             return this
         }
 
-        fun setRestartAppIfError(restartAppIfError:Boolean):Builder{
+        fun setRestartAppIfError(restartAppIfError:Boolean): Builder {
             this.restartAppIfError = restartAppIfError
             return this
         }
 
-        fun setCountlyAppKey(countlyAppKey:String):Builder{
+        fun setCountlyAppKey(countlyAppKey:String): Builder {
             this.countlyAppKey = countlyAppKey
             return this
         }

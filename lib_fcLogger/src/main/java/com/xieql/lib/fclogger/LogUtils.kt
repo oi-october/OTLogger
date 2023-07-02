@@ -1,8 +1,7 @@
-package com.xieql.lib.logger
+package com.xieql.lib.fclogger
 
 import android.app.Application
-import com.xieql.lib.logger.core.LogLevel
-import com.xieql.lib.logger.core.appCtx
+import com.xieql.lib.fclogger.core.LogLevel
 
 object LogUtils {
 
@@ -17,13 +16,13 @@ object LogUtils {
     private const val TAG = "SAASBOX-"
 
     fun init(application:Application,logHelper: LogConfig){
-        this.helper = logHelper
+        helper = logHelper
         logger = logHelper.init()
-        CrashCatchHandler.init(application,logHelper.getCrashListener())
+        CrashCatchHandler.init(application, logHelper.getCrashListener())
         helper.getLogReporter()?.start()
     }
 
-    fun getHelper():LogConfig{
+    fun getHelper(): LogConfig {
         return helper
     }
 
@@ -70,7 +69,7 @@ object LogUtils {
             d(tag,msg,tr,packageLevel+1)
         }else{
             val tag = "${LogRule.LogTag.WITH_ENCRYPT} $tag"
-            val msg = if(msg!=null)LogAESEncrypt.encrypt(msg) else msg
+            val msg = if(msg!=null) LogAESEncrypt.encrypt(msg) else msg
             d(tag,msg,tr,packageLevel+1)
         }
         return 0
@@ -101,7 +100,7 @@ object LogUtils {
             i(tag,msg,tr,packageLevel+1)
         }else{
             val tag = "${LogRule.LogTag.WITH_ENCRYPT} $tag"
-            val msg = if(msg!=null)LogAESEncrypt.encrypt(msg) else msg
+            val msg = if(msg!=null) LogAESEncrypt.encrypt(msg) else msg
             i(tag,msg,tr,packageLevel+1)
         }
         return 0
@@ -132,7 +131,7 @@ object LogUtils {
             w(tag,msg,tr,packageLevel+1)
         }else{
             val tag = "${LogRule.LogTag.WITH_ENCRYPT} $tag"
-            val msg = if(msg!=null)LogAESEncrypt.encrypt(msg) else msg
+            val msg = if(msg!=null) LogAESEncrypt.encrypt(msg) else msg
             w(tag,msg,tr,packageLevel+1)
         }
         return 0
@@ -163,7 +162,7 @@ object LogUtils {
             e(tag,msg,tr,packageLevel+1)
         }else{
             val tag = "${LogRule.LogTag.WITH_ENCRYPT} $tag"
-            val msg = if(msg!=null)LogAESEncrypt.encrypt(msg) else msg
+            val msg = if(msg!=null) LogAESEncrypt.encrypt(msg) else msg
             e(tag,msg,tr,packageLevel+1)
         }
         return 0
@@ -195,7 +194,7 @@ object LogUtils {
             wtf(tag,msg,tr,packageLevel+1)
         }else{
             val tag = "${LogRule.LogTag.WITH_ENCRYPT} $tag"
-            val msg = if(msg!=null)LogAESEncrypt.encrypt(msg) else msg
+            val msg = if(msg!=null) LogAESEncrypt.encrypt(msg) else msg
             wtf(tag,msg,tr,packageLevel+1)
         }
         return 0

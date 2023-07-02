@@ -1,4 +1,4 @@
-package com.xieql.lib.logger
+package com.xieql.lib.fclogger
 
 import android.app.Activity
 import android.app.AlarmManager
@@ -30,11 +30,11 @@ object CrashCatchHandler : Thread.UncaughtExceptionHandler {
 
     fun init(application: Application,crashListener: CrashListener?) {
         // 获取系统默认的UncaughtException处理器
-        this.application = application
+        CrashCatchHandler.application = application
         mDefHandler = Thread.getDefaultUncaughtExceptionHandler()
         // 设置当前CrashHandler为程序的默认处理器
         Thread.setDefaultUncaughtExceptionHandler(this)
-        this.crashListener = crashListener
+        CrashCatchHandler.crashListener = crashListener
         collectAllActivity()
     }
 
@@ -96,7 +96,7 @@ object CrashCatchHandler : Thread.UncaughtExceptionHandler {
     private fun collectAllActivity(){
         application.registerActivityLifecycleCallbacks(object:Application.ActivityLifecycleCallbacks {
             override fun onActivityCreated(p0: Activity, p1: Bundle?) {
-                LogUtils.v(TAG,"创建Activity:${p0}")
+                LogUtils.v(TAG, "创建Activity:${p0}")
                 synchronized(this){
                     var target:WeakReference<Activity>? = null
                     activityList.forEach {
@@ -112,27 +112,27 @@ object CrashCatchHandler : Thread.UncaughtExceptionHandler {
 
             }
             override fun onActivityStarted(p0: Activity) {
-                LogUtils.v(TAG,"${p0} 进入 onStart")
+                LogUtils.v(TAG, "${p0} 进入 onStart")
             }
 
             override fun onActivityResumed(p0: Activity) {
-                LogUtils.v(TAG,"${p0} 进入 onResume")
+                LogUtils.v(TAG, "${p0} 进入 onResume")
             }
 
             override fun onActivityPaused(p0: Activity) {
-                LogUtils.v(TAG,"${p0} 进入 onPaused")
+                LogUtils.v(TAG, "${p0} 进入 onPaused")
             }
 
             override fun onActivityStopped(p0: Activity) {
-                LogUtils.v(TAG,"${p0} 进入 onStop")
+                LogUtils.v(TAG, "${p0} 进入 onStop")
             }
 
             override fun onActivitySaveInstanceState(p0: Activity, p1: Bundle) {
-                LogUtils.v(TAG,"${p0} 进入 onSaveInstanceState")
+                LogUtils.v(TAG, "${p0} 进入 onSaveInstanceState")
             }
 
             override fun onActivityDestroyed(p0: Activity) {
-                LogUtils.v(TAG,"销毁Activity:${p0}")
+                LogUtils.v(TAG, "销毁Activity:${p0}")
 
                 synchronized(this){
                     var target:WeakReference<Activity>? = null
@@ -157,10 +157,10 @@ object CrashCatchHandler : Thread.UncaughtExceptionHandler {
     private fun finishActivity(){
         activityList.forEach {
                 try {
-                    LogUtils.v(TAG,"结束Activity:${it.get()}")
+                    LogUtils.v(TAG, "结束Activity:${it.get()}")
                     it.get()?.finish()
                 }catch (e:Exception){
-                    LogUtils.e(TAG,"结束Activity失败：${it.get()}",e)
+                    LogUtils.e(TAG, "结束Activity失败：${it.get()}", e)
                 }
             }
         }

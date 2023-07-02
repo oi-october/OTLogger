@@ -1,4 +1,4 @@
-package com.xieql.lib.logger.utils
+package com.xieql.lib.fclogger.utils
 
 internal fun debugLog(msg:String){
     System.out.println(msg)

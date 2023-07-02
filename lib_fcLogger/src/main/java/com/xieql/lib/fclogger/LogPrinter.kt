@@ -1,12 +1,15 @@
-package com.xieql.lib.logger
+package com.xieql.lib.fclogger
 
 import android.os.Environment
 import android.os.Process
 import android.os.StatFs
 import android.util.Log
 import androidx.annotation.StringRes
+import com.xieql.lib.fclogger.core.*
+import com.xieql.lib.fclogger.utils.*
+import com.xieql.lib.fclogger.utils.debugLog
+import com.xieql.lib.logger.R
 import com.xieql.lib.logger.core.*
-import com.xieql.lib.logger.utils.*
 import java.io.File
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -30,9 +33,9 @@ internal class LogPrinter() : Printer {
     ) {
         if(isDebug()){
             //控制台输出
-            val tag = FormatHelper.getConsoleFormatTag(tag,message,element)
-            val msg = FormatHelper.getConsoleFormatMsg(tag,message,element)
-            PrintHelper.log2Console(logLevel,tag,msg)
+            val tag = FormatHelper.getConsoleFormatTag(tag, message, element)
+            val msg = FormatHelper.getConsoleFormatMsg(tag, message, element)
+            PrintHelper.log2Console(logLevel, tag, msg)
         }
     }
 
@@ -46,7 +49,15 @@ internal class LogPrinter() : Printer {
         logSegment: LogSegment
     ) {
         //本地文件输出
-        PrintHelper.log2File(storeInSdCard,logLevel,message,element,logDir,logPrefix,logSegment)
+        PrintHelper.log2File(
+            storeInSdCard,
+            logLevel,
+            message,
+            element,
+            logDir,
+            logPrefix,
+            logSegment
+        )
     }
 }
 
@@ -74,23 +85,24 @@ internal object PrintHelper{
                  element: StackTraceElement,
                  logDir: String,
                  logPrefix: String,
-                 logSegment: LogSegment){
+                 logSegment: LogSegment
+    ){
         var message= message
         if(!FreeSpaceManager.isFreeSpace){
             //空间不足
             if(logLevel == LogLevel.WTF){
                 // WTF级别日志可以输出
-                LogUtils.v("print","空间不足，输出WTF日志")
+                LogUtils.v("print", "空间不足，输出WTF日志")
             }else{
                 //其他日志不可以输出
-                LogUtils.v("print","空间不足，不输出日志")
+                LogUtils.v("print", "空间不足，不输出日志")
                 return
             }
         }
         debugLog("写入输入日志到文件")
 
         executePool()
-        val msg = FormatHelper.getFileFormatMsg(logLevel,message,element)
+        val msg = FormatHelper.getFileFormatMsg(logLevel, message, element)
         PrinterExecutor.cacheQueue.offer(
             LogToFileInfo(
                 storeInSdCard,
@@ -148,7 +160,7 @@ internal object PrintHelper{
             }
         }
 
-        private fun write(info: LogToFileInfo,filePath: String, content: String) {
+        private fun write(info: LogToFileInfo, filePath: String, content: String) {
             val file = File(filePath)
             var outContent: String = content
             if (!file.isExist()) {
@@ -161,15 +173,15 @@ internal object PrintHelper{
         }
 
         //文件过多，删除最久的文件
-        private fun deleteLessFile(info:LogToFileInfo){
+        private fun deleteLessFile(info: LogToFileInfo){
             try {
                 val dirPath = LogConfig.genDirPath(info.storeInSdCard, info.logDir)
                 val logDir = File(dirPath)
                 val logFiles = logDir.logFiles()
                 if(logFiles != null && logFiles.isNotEmpty()){
                     val filterLogFiles = logFiles.filterLogFiles(info.logPrefix, info.logSegment)
-                    LogUtils.d(TAG,"日志数量：${filterLogFiles.size}")
-                    if(filterLogFiles.size>0 && filterLogFiles.size>LogUtils.getHelper().getMaxLogNum()){
+                    LogUtils.d(TAG, "日志数量：${filterLogFiles.size}")
+                    if(filterLogFiles.size>0 && filterLogFiles.size> LogUtils.getHelper().getMaxLogNum()){
                         //删除最旧的数据
                         var oldFile = filterLogFiles[0]
                         for (index in 0 until filterLogFiles.size){
@@ -178,14 +190,14 @@ internal object PrintHelper{
                             }
                         }
                         if(oldFile.exists()){
-                            LogUtils.d(TAG,"删除多余日志文件：${oldFile.name}")
+                            LogUtils.d(TAG, "删除多余日志文件：${oldFile.name}")
                             oldFile.delete()
                         }
 
                     }
                 }
             }catch (e:Exception){
-                LogUtils.w(TAG,"删除文件失败",e)
+                LogUtils.w(TAG, "删除文件失败", e)
             }
         }
 
@@ -225,7 +237,7 @@ internal object FormatHelper{
 
     //文件日志格式
     //[时间/包名 等级][(类名:行数) #方法名称 Thread:线程名称]\n 日志信息\n
-    fun getFileFormatMsg(level: LogLevel,msg: String,element: StackTraceElement):String{
+    fun getFileFormatMsg(level: LogLevel, msg: String, element: StackTraceElement):String{
         return "[$nowStr/${appCtx.packageName} $level] [${Process.myPid()}] [(${element.fileName}:${element.lineNumber})"+
             " #${element.methodName} Thread:${Thread.currentThread().name} - ${Thread.currentThread().id}]\n"+
             "$msg\n"
@@ -271,38 +283,44 @@ internal object FreeSpaceManager{
 
                     //获得日志大小
                     logDir = LogConfig.genDirPath(true, LogUtils.getHelper().getLogDir())
-                    LogUtils.v(TAG,"文件文件夹：${logDir}")
-                    logSize = FileSizeUtil.getFileOrFilesSize(logDir,3)
+                    LogUtils.v(TAG, "文件文件夹：${logDir}")
+                    logSize = FileSizeUtil.getFileOrFilesSize(logDir, 3)
 
-                    wxpaySize = FileSizeUtil.getFileOrFilesSize(WX_PAY_FACE,3)
-                    ycfacesize = FileSizeUtil.getFileOrFilesSize(YC_LOG,3)
-                    systemLogSize = FileSizeUtil.getFileOrFilesSize(SYSTEM_LOG,3)
+                    wxpaySize = FileSizeUtil.getFileOrFilesSize(WX_PAY_FACE, 3)
+                    ycfacesize = FileSizeUtil.getFileOrFilesSize(YC_LOG, 3)
+                    systemLogSize = FileSizeUtil.getFileOrFilesSize(SYSTEM_LOG, 3)
 
                     //获得可用空间大小
                     free =  getSDFreeSpace()
-                    LogUtils.i(TAG,"空闲空间：${free} ,  占用-> 丰巢日志:${logSize}，微信刷脸日志：${wxpaySize}，云从日志：${ycfacesize}，,系统日志：${systemLogSize}")
+                    LogUtils.i(
+                        TAG,
+                        "空闲空间：${free} ,  占用-> 丰巢日志:${logSize}，微信刷脸日志：${wxpaySize}，云从日志：${ycfacesize}，,系统日志：${systemLogSize}"
+                    )
 
 
 
                     //判断空闲空间
                     isFreeSpace = free > MIN_NUM
                     if(!isFreeSpace){
-                        LogUtils.wtf(TAG,"空闲空间过少：空闲：${free}, 占用-> 丰巢日志:${logSize}，微信刷脸日志：${wxpaySize}，云从日志：${ycfacesize}，,系统日志：${systemLogSize}")
+                        LogUtils.wtf(
+                            TAG,
+                            "空闲空间过少：空闲：${free}, 占用-> 丰巢日志:${logSize}，微信刷脸日志：${wxpaySize}，云从日志：${ycfacesize}，,系统日志：${systemLogSize}"
+                        )
                     }
 
                     //日志文件大于 500M 删除日志
                     if(logSize> MAX_LOG_SIZE){
-                        LogUtils.wtf(TAG,"日志超过500M容量,删除日志")
+                        LogUtils.wtf(TAG, "日志超过500M容量,删除日志")
                         deleteLog(logSize)
                     }
 
 
-                    logSize = FileSizeUtil.getFileOrFilesSize(logDir,3)
+                    logSize = FileSizeUtil.getFileOrFilesSize(logDir, 3)
                     //获得可用空间大小
                     free =  getSDFreeSpace()
                     //判断空闲空间
                     isFreeSpace = free > MIN_NUM
-                    LogUtils.i(TAG,"删除后空闲空间：${free} , 日志占用空间：${logSize}")
+                    LogUtils.i(TAG, "删除后空闲空间：${free} , 日志占用空间：${logSize}")
 
 
                     try {
@@ -324,13 +342,15 @@ internal object FreeSpaceManager{
      */
     private fun deleteLog(size:Double){
 
-        val dirPath = LogConfig.genDirPath(true,LogUtils.getHelper().getLogDir())
+        val dirPath = LogConfig.genDirPath(true, LogUtils.getHelper().getLogDir())
         val logDir = File(dirPath)
         val logFiles = logDir.logFiles()
         if(logFiles != null && logFiles.isNotEmpty()){
-            val filterLogFiles = logFiles.filterLogFiles(LogUtils.getHelper().getLogPrefix(),LogUtils.getHelper().getLogSegment())
+            val filterLogFiles = logFiles.filterLogFiles(
+                LogUtils.getHelper().getLogPrefix(),
+                LogUtils.getHelper().getLogSegment())
             filterLogFiles.sort()
-            LogUtils.d(TAG,"日志文件：${filterLogFiles}")
+            LogUtils.d(TAG, "日志文件：${filterLogFiles}")
 
             if(filterLogFiles.size>0){
                 //计算需要删除文件
@@ -339,9 +359,15 @@ internal object FreeSpaceManager{
                 var deleteLogSize = 0.0
 
                 for (index in 0 until filterLogFiles.size-1){
-                    deleteLogSize += FileSizeUtil.getFileOrFilesSize(filterLogFiles[index].absolutePath,3)
+                    deleteLogSize += FileSizeUtil.getFileOrFilesSize(
+                        filterLogFiles[index].absolutePath,
+                        3
+                    )
                     deleteList.add(filterLogFiles[index])
-                    LogUtils.v(TAG,"删除日志文件：${filterLogFiles[index].absolutePath},删除大小：${deleteLogSize}")
+                    LogUtils.v(
+                        TAG,
+                        "删除日志文件：${filterLogFiles[index].absolutePath},删除大小：${deleteLogSize}"
+                    )
 
                     if((size - deleteLogSize) < (MAX_LOG_SIZE / 2)){
                         break
@@ -352,7 +378,7 @@ internal object FreeSpaceManager{
                     try {
                         file.delete()
                     }catch (e:Exception){
-                        LogUtils.v(TAG,"删除失败",e)
+                        LogUtils.v(TAG, "删除失败", e)
                     }
                 }
             }

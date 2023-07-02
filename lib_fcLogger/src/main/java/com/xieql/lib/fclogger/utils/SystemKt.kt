@@ -1,4 +1,4 @@
-package com.xieql.lib.logger.utils
+package com.xieql.lib.fclogger.utils
 
 import android.os.Build
 import android.os.Environment

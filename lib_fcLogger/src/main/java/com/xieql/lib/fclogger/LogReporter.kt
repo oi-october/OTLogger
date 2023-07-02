@@ -1,4 +1,4 @@
-package com.xieql.lib.logger
+package com.xieql.lib.fclogger
 
 /**
  * 日志上报

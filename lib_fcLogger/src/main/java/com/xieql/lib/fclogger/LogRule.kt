@@ -2,7 +2,7 @@
  * Copyright 2015-2021 Hive Box.
  */
 
-package com.xieql.lib.logger
+package com.xieql.lib.fclogger
 
 internal object LogRule {
 

@@ -1,4 +1,4 @@
-package com.xieql.lib.logger.core
+package com.xieql.lib.fclogger.core
 
 import com.xieql.lib.logger.unexpectedValue
 

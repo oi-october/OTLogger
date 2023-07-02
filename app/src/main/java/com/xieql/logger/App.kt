@@ -2,10 +2,10 @@ package com.xieql.logger
 
 import android.app.Application
 import android.util.Log
-import com.xieql.lib.logger.CrashListener
-import com.xieql.lib.logger.LogConfig
-import com.xieql.lib.logger.LogReporter
-import com.xieql.lib.logger.LogUtils
+import com.xieql.lib.fclogger.CrashListener
+import com.xieql.lib.fclogger.LogConfig
+import com.xieql.lib.fclogger.LogReporter
+import com.xieql.lib.fclogger.LogUtils
 
 class App: Application() {
 
@@ -42,7 +42,7 @@ class LogReportWorker : LogReporter(){
     }
 }
 
-class MyCrashListener : CrashListener{
+class MyCrashListener : CrashListener {
     override fun onCrash(thread: Thread, ex: Throwable) {
         Log.w("MyCrashListener","异常崩溃",ex)
     }

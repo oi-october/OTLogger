@@ -1,4 +1,4 @@
-package com.xieql.lib.logger
+package com.xieql.lib.fclogger
 
 import android.util.Base64
 import java.lang.Exception
@@ -43,7 +43,7 @@ internal object LogAESEncrypt {
             //将加密以后的数据进行 Base64 编码
             return base64Encode(encryptByte)
         } catch (e: Exception) {
-            LogUtils.e(TAG,"加密失败",Exception("日志加密失败"))
+            LogUtils.e(TAG, "加密失败", Exception("日志加密失败"))
         }
         return null
     }
@@ -64,7 +64,7 @@ internal object LogAESEncrypt {
             val result = cipher.doFinal(data)
             return String(result, CHARSET_UTF8)
         } catch (e: Exception) {
-            LogUtils.e(TAG,"解密失败",Exception("日志解密失败"))
+            LogUtils.e(TAG, "解密失败", Exception("日志解密失败"))
         }
         return null
     }
@@ -126,5 +126,5 @@ internal object LogAESEncrypt {
 fun logDecrty() {
     val a = "UbnY3W9YmKNbOkympu9priVt4jBCjYVS8cGLmUEnDS1DfdK351U63EjMV7BH6/gJFo/EfcHuHtpJbokHnLftVHb4+at5HVX+hwbxPhVfv9nwdYaYyoRd2a73qTEUxEU8pe79dPbewj4eDVnxhhBAWzR+XURFxI37ZkF/YmBi+HQsEo8ajTtphI8R+GYQeFbSPdJZ0PQycjB8uxWPwtGs4yV6QGNIybjQKryLnmko20JRwekmWp49WDrus20ep7sLEpd5Zurb7M6ld26KSX6p4TkveadT3LAI9Q5LmCQ6zC3Emi0RTSxawbNW7FGGxS6Q1iB8cod9v5P+UZO/3/Dx0wMslhKe87tlLfxUhAfFtrNubns+FWX850AGJRdrWsD3gwQsW2IcaQmjFOWBAhqzPf4pG+CO6U6P9DywMK5/YVRHaZDPLmIxHBhXZcOpCZX3"
 
-    LogUtils.i("日志解密",LogAESEncrypt.decrypt(a))
+    LogUtils.i("日志解密", LogAESEncrypt.decrypt(a))
 }

@@ -1,4 +1,4 @@
-package com.xieql.lib.logger.core
+package com.xieql.lib.fclogger.core
 
 import android.content.ContentProvider
 import android.content.ContentValues
@@ -7,18 +7,19 @@ import android.database.Cursor
 import android.database.MatrixCursor
 import android.net.Uri
 import androidx.annotation.VisibleForTesting
-import com.xieql.lib.logger.core.LoggerMetaData.Companion.CONTENT_ITEM_TYPE
-import com.xieql.lib.logger.core.LoggerMetaData.Companion.CONTENT_TYPE
-import com.xieql.lib.logger.core.LoggerMetaData.Companion.DIR_NAME
-import com.xieql.lib.logger.core.LoggerMetaData.Companion.INFO
-import com.xieql.lib.logger.core.LoggerMetaData.Companion.INFOS
-import com.xieql.lib.logger.core.LoggerMetaData.Companion.INFOS_CODE
-import com.xieql.lib.logger.core.LoggerMetaData.Companion.INFO_CODE
-import com.xieql.lib.logger.core.LoggerMetaData.Companion.NAME
-import com.xieql.lib.logger.core.LoggerMetaData.Companion.PREFIX
-import com.xieql.lib.logger.core.LoggerMetaData.Companion.SEGMENT
-import com.xieql.lib.logger.core.LoggerMetaData.Companion.STORE_IN_SD_CARD
-import com.xieql.lib.logger.core.LoggerMetaData.Companion.UPLOAD_TOKEN
+import com.xieql.lib.fclogger.core.LoggerMetaData.Companion.CONTENT_ITEM_TYPE
+import com.xieql.lib.fclogger.core.LoggerMetaData.Companion.CONTENT_TYPE
+import com.xieql.lib.fclogger.core.LoggerMetaData.Companion.DIR_NAME
+import com.xieql.lib.fclogger.core.LoggerMetaData.Companion.INFO
+import com.xieql.lib.fclogger.core.LoggerMetaData.Companion.INFOS
+import com.xieql.lib.fclogger.core.LoggerMetaData.Companion.INFOS_CODE
+import com.xieql.lib.fclogger.core.LoggerMetaData.Companion.INFO_CODE
+import com.xieql.lib.fclogger.core.LoggerMetaData.Companion.NAME
+import com.xieql.lib.fclogger.core.LoggerMetaData.Companion.PREFIX
+import com.xieql.lib.fclogger.core.LoggerMetaData.Companion.SEGMENT
+import com.xieql.lib.fclogger.core.LoggerMetaData.Companion.STORE_IN_SD_CARD
+import com.xieql.lib.fclogger.core.LoggerMetaData.Companion.UPLOAD_TOKEN
+import com.xieql.lib.logger.core.appCtx
 import com.xieql.lib.logger.unexpectedValue
 import com.xieql.lib.logger.unsupported
 

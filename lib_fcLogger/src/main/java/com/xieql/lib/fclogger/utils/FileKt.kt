@@ -1,8 +1,8 @@
-package com.xieql.lib.logger.utils
+package com.xieql.lib.fclogger.utils
 
 import com.xieql.lib.logger.illegalArg
-import com.xieql.lib.logger.utils.Encoding.CHARSET_GB2312
-import com.xieql.lib.logger.utils.Encoding.CHARSET_ISO_8859_1
+import com.xieql.lib.fclogger.utils.Encoding.CHARSET_GB2312
+import com.xieql.lib.fclogger.utils.Encoding.CHARSET_ISO_8859_1
 import java.io.File
 import java.io.FileOutputStream
 import java.nio.charset.Charset
