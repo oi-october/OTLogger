@@ -1,4 +1,4 @@
-package com.xieql.lib.logger.core
+package com.xieql.lib.logger
 
 import android.util.Log
 

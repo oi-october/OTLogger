@@ -1,13 +1,12 @@
 package com.xieql.lib.logger.core
 
-import android.app.Application
-import android.content.Context
 import com.jakewharton.threetenabp.AndroidThreeTen
 import org.threeten.bp.Instant
 import org.threeten.bp.LocalDate
 import org.threeten.bp.OffsetDateTime
 import org.threeten.bp.ZoneId
 import org.threeten.bp.format.DateTimeFormatter
+import java.util.*
 
 object TimeKt{
 
@@ -41,6 +40,13 @@ object TimeKt{
     fun String.toMillis(): Long = this.toDateTime().toMillis()
 
     fun Long.toDateTimeString(): String = this.toDateTime().format(standardFormatter)
+
+    //获取时间戳对应的小时
+    fun getHour(time:Long):Int{
+        val c = Calendar.getInstance()
+        c.timeInMillis = time
+        return c.get(Calendar.HOUR_OF_DAY)
+    }
 
 }
 

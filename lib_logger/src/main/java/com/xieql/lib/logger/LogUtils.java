@@ -2,9 +2,6 @@ package com.xieql.lib.logger;
 
 import androidx.annotation.NonNull;
 
-import com.xieql.lib.logger.core.LogLevel;
-import com.xieql.lib.logger.core.Logger;
-
 /**
  * 外部使用该类中的静态方法打印日志
  */

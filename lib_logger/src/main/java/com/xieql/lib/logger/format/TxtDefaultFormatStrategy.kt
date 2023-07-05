@@ -1,7 +1,7 @@
 package com.xieql.lib.logger.format
 
 import android.util.Log
-import com.xieql.lib.logger.core.LogLevel
+import com.xieql.lib.logger.LogLevel
 import com.xieql.lib.logger.format.base.BaseFormatStrategy
 
 /**

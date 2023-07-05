@@ -1,4 +1,4 @@
-package com.xieql.lib.logger.core
+package com.xieql.lib.logger
 
 import com.xieql.lib.logger.print.BaseLogTxtPrinter
 import com.xieql.lib.logger.print.BaseLogcatPrinter
@@ -12,10 +12,10 @@ import com.xieql.lib.logger.print.LogTxtDefaultPrinter
 open class Logger {
 
     internal companion object{
-         var logger :Logger = Builder().build()
+         var logger : Logger = Builder().build()
     }
 
-    private lateinit var builder:Builder
+    private lateinit var builder: Builder
     private constructor(build: Builder){
         builder = build
     }
@@ -27,9 +27,9 @@ open class Logger {
      * @param msg 日志消息
      * @param thr 异常消息
      */
-    open fun println(level:LogLevel,tag:String?,msg:String?,thr:Throwable?){
+    open fun println(level: LogLevel, tag:String?, msg:String?, thr:Throwable?){
         builder.logcatPrinter.print(level, tag, msg, thr)
-        builder.logTxtPrinter.
+        builder.logTxtPrinter.print(level,tag,msg, thr)
     }
 
     class Builder{
@@ -38,17 +38,17 @@ open class Logger {
         //日志文件打印机
         internal var logTxtPrinter:BaseLogTxtPrinter = LogTxtDefaultPrinter()
 
-        fun setLogcatPrinter(logcatPrinter:LogcatDefaultPrinter):Builder{
+        fun setLogcatPrinter(logcatPrinter:LogcatDefaultPrinter): Builder {
             this.logcatPrinter = logcatPrinter
             return this
         }
 
-        fun setLogTxtPrinter(logTxtPrinter:LogTxtDefaultPrinter):Builder{
+        fun setLogTxtPrinter(logTxtPrinter:LogTxtDefaultPrinter): Builder {
             this.logTxtPrinter = logTxtPrinter
             return this
         }
 
-        fun build():Logger{
+        fun build(): Logger {
             return Logger(this)
         }
 

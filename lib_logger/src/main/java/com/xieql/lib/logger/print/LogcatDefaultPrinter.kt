@@ -1,6 +1,6 @@
 package com.xieql.lib.logger.print
 
-import com.xieql.lib.logger.core.LogLevel
+import com.xieql.lib.logger.LogLevel
 import com.xieql.lib.logger.format.LogcatDefaultFormatStrategy
 import com.xieql.lib.logger.format.base.BaseFormatStrategy
 
@@ -8,6 +8,9 @@ import com.xieql.lib.logger.format.base.BaseFormatStrategy
  * 默认的Locat 日志打印机
  */
 open class LogcatDefaultPrinter:BaseLogcatPrinter(){
+
+    @Volatile
+    protected var formatStrategy:BaseFormatStrategy? = null
 
     override fun isPrint(): Boolean {
        return true
@@ -18,7 +21,14 @@ open class LogcatDefaultPrinter:BaseLogcatPrinter(){
     }
 
     override fun getLogcatFormatStrategy(): BaseFormatStrategy {
-        return LogcatDefaultFormatStrategy()
+        if(formatStrategy == null){
+            synchronized(this){
+                if(formatStrategy == null){
+                    formatStrategy = LogcatDefaultFormatStrategy()
+                }
+            }
+        }
+        return formatStrategy!!
     }
 
 }

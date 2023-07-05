@@ -2,7 +2,7 @@ package com.xieql.lib.logger.format.base
 
 import android.util.Log
 import com.xieql.lib.logger.common.PACKAGE_NAME
-import com.xieql.lib.logger.core.LogLevel
+import com.xieql.lib.logger.LogLevel
 import com.xieql.lib.logger.core.TimeKt
 
 /**
@@ -18,7 +18,7 @@ abstract class BaseFormatStrategy {
      * @param packageName 打印日志的包的包名
      * @return 日志输出格式
      */
-    abstract fun format(logLevel: LogLevel,tag:String?,msg:String?,thr: Throwable?,packageName:String= PACKAGE_NAME):String
+    abstract fun format(logLevel: LogLevel, tag:String?, msg:String?, thr: Throwable?, packageName:String= PACKAGE_NAME):String
 
     /**
      *  获取当前时间
