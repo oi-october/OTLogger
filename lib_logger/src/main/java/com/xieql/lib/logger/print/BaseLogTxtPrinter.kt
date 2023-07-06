@@ -24,12 +24,8 @@ abstract class BaseLogTxtPrinter {
             //debugLog("日志级别比最低级别小，不需要打印")
             return
         }
-        getWriterHandler().sendMessage(
-            getWriterHandler().obtainMessage(
-                999,
-                arrayOf<Any?>(logLevel, tag, msg, thr)
-            )
-        )
+        val logBody = getLogcatFormatStrategy().format(logLevel, tag, msg, thr) //组装数据
+        getWriterHandler().sendMessage(getWriterHandler().obtainMessage(999, arrayOf<Any?>(logLevel,logBody)))
     }
 
     //释放打印日志
@@ -52,31 +48,28 @@ abstract class BaseLogTxtPrinter {
                     val handlerThread = HandlerThread("Logger")
                     handlerThread.start()
                     handler =
-                        WriteHandler(getLogDirStrategy(), getLogcatFormatStrategy()) //获取日志文件夹管理策略
+                        WriteHandler(getLogDirStrategy()) //获取日志文件夹管理策略
                 }
             }
         }
         return handler!!
     }
 
+
 }
 
 open class WriteHandler(
-    val logDiskStrategy: BaseLogDiskStrategy,
-    val formatStrategy: BaseFormatStrategy
+    val logDiskStrategy: BaseLogDiskStrategy
 ) : Handler() {
 
     override fun handleMessage(msg: Message) {
         val obj = msg.obj as Array<Any>
         val logLevel = obj[0] as LogLevel
-        val logTag = if (obj[1] != null)(obj[1] as String) else null
-        val logMsg = if (obj[2] != null)(obj[2] as String) else null
-        val logThr = if (obj[3] != null)(obj[3] as Throwable) else null
-        log(logLevel, logTag, logMsg, logThr)
+        val logBody = if(obj[1] != null)(obj[1] as String) else null
+        log(logLevel,logBody?:"")
     }
 
-    open fun log(logLevel: LogLevel, tag: String?, msg: String?, thr: Throwable?) {
-        val logBody = formatStrategy.format(logLevel, tag, msg, thr)
+    open fun log(logLevel: LogLevel, logBody:String) {
         val logFilePath =
             logDiskStrategy.getLogPrintPath(logLevel, logBody, logBody.length.toLong())
         val logFile = File(logFilePath)

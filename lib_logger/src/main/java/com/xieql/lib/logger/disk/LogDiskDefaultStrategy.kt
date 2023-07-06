@@ -15,18 +15,19 @@ open class LogDiskDefaultStrategy : BaseLogDiskStrategy() {
     private val logFileNameDateFormat = SimpleDateFormat("yyyy_MM_dd")
     //默认存储地址
     private val defaultLogDir by lazy {
-        val path = appCtx.cacheDir.absolutePath+File.separator+"log"
+        val path = appCtx.getExternalFilesDir("")?.absolutePath+File.separator+"log"
         val file = File(path)
         if(!file.exists()|| !file.isDirectory){
             file.mkdirs()
         }
+        debugLog("日志存储路径:${file.absolutePath}")
         return@lazy file.absolutePath
     }
     //至少遗留数据
     private val defaultAtLeastResidual by lazy {
         val total = getTotalStore()
         if(total>2*1024*1024){
-            debugLog("总存储过 >2GB，至少遗留存储空间:${500*1024} KB")
+            debugLog("总存储 >2GB，至少遗留存储空间:${500*1024} KB")
             return@lazy 500
         }else{
             val atLeast = total/4

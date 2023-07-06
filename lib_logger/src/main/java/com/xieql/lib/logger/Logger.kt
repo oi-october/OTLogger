@@ -30,7 +30,7 @@ open class Logger {
     open fun println(level: LogLevel, tag:String?, msg:String?, thr:Throwable?){
         if(this::builder.isInitialized){
             builder.logcatPrinter.print(level, tag, msg, thr)
-            builder.logTxtPrinter.print(level,tag,msg, thr)
+            builder.logTxtPrinter.print(level,tag,  msg, thr)
         }
     }
 
