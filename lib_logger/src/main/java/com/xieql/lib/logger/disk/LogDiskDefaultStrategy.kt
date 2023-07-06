@@ -38,7 +38,7 @@ open class LogDiskDefaultStrategy : BaseLogDiskStrategy() {
     @Volatile
     private var currentFilepath:FilePath? = null
 
-    override fun getLogPrintPath(logLevel: LogLevel, msg: String?, msgSize: Long): String? {
+    override fun getLogPrintPath(logLevel: LogLevel, logBody: String?, bodySize: Long): String? {
         val filePath= currentFilepath
         val currentTime = System.currentTimeMillis()
         if(filePath != null && filePath.isMatch(currentTime)){
@@ -48,7 +48,6 @@ open class LogDiskDefaultStrategy : BaseLogDiskStrategy() {
             val fileName = getFileName(currentTime,section.first)
             val path = getLogDir()+File.separator+fileName
             val filePath = FilePath(section.second.first,section.second.second,path)
-
 
             //todo 进行存储管理，并创建文件
 
@@ -171,7 +170,6 @@ open class LogDiskDefaultStrategy : BaseLogDiskStrategy() {
             val isMatch = currentTime in startTime until endTime
             return isMatch
         }
-
     }
 
 

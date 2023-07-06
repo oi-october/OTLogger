@@ -3,9 +3,12 @@ package com.xieql.lib.logger.print
 import android.os.Handler
 import android.os.HandlerThread
 import android.os.Message
+import android.util.Log
 import com.xieql.lib.logger.LogLevel
 import com.xieql.lib.logger.disk.BaseLogDiskStrategy
 import com.xieql.lib.logger.format.base.BaseFormatStrategy
+import com.xieql.lib.logger.util.debugLog
+import java.io.File
 
 abstract class BaseLogTxtPrinter {
 
@@ -39,7 +42,7 @@ abstract class BaseLogTxtPrinter {
                 if(handler == null){
                     val handlerThread = HandlerThread("Logger")
                     handlerThread.start()
-                    handler = WriteHandler(getLogDirStrategy()) //获取日志文件夹管理策略
+                    handler = WriteHandler(getLogDirStrategy(),getLogcatFormatStrategy()) //获取日志文件夹管理策略
                 }
             }
         }
@@ -48,7 +51,7 @@ abstract class BaseLogTxtPrinter {
 
 }
 
-open class WriteHandler(val logDirStrategy: BaseLogDiskStrategy):Handler(){
+open class WriteHandler(val logDiskStrategy: BaseLogDiskStrategy, val formatStrategy: BaseFormatStrategy):Handler(){
 
     override fun handleMessage(msg: Message) {
         val obj = msg.obj as Array<Any>
@@ -60,6 +63,35 @@ open class WriteHandler(val logDirStrategy: BaseLogDiskStrategy):Handler(){
     }
 
     open fun log(logLevel: LogLevel, tag: String?, msg: String?, thr: Throwable?){
+        val logBody = formatStrategy.format(logLevel, tag, msg, thr)
+        val logFilePath =  logDiskStrategy.getLogPrintPath(logLevel,logBody,logBody.length.toLong())
+        val logFile = File(logFilePath)
+        val parentFile = logFile.parentFile
+        try {
+            //创建父文件夹
+            if(!parentFile.exists() || !parentFile.isDirectory){
+                val isSuccess = parentFile.mkdirs()
+                if(isSuccess){
+                    debugLog("无法创建日志文件夹:"+parentFile.absolutePath)
+                    return
+                }
+            }
+            //创建文件
+            if(!logFile.exists() || !logFile.isFile){
+                val isCreateSuccess =  logFile.createNewFile()
+                if(!isCreateSuccess){
+                    debugLog("无法创建日志文件:"+logFilePath)
+                    return
+                }
+            }
+
+            logFile.appendText(logBody)
+
+        }catch (e:Exception){
+            debugLog("日志写入异常，日志文件名称="+logFilePath)
+            debugLog(Log.getStackTraceString(e))
+        }
+
 
     }
 
