@@ -28,8 +28,10 @@ open class Logger {
      * @param thr 异常消息
      */
     open fun println(level: LogLevel, tag:String?, msg:String?, thr:Throwable?){
-        builder.logcatPrinter.print(level, tag, msg, thr)
-        builder.logTxtPrinter.print(level,tag,msg, thr)
+        if(this::builder.isInitialized){
+            builder.logcatPrinter.print(level, tag, msg, thr)
+            builder.logTxtPrinter.print(level,tag,msg, thr)
+        }
     }
 
     class Builder{

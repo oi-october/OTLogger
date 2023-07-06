@@ -3,6 +3,7 @@ package com.xieql.lib.logger.print
 import com.xieql.lib.logger.LogLevel
 import com.xieql.lib.logger.disk.BaseLogDiskStrategy
 import com.xieql.lib.logger.disk.LogDiskDefaultStrategy
+import com.xieql.lib.logger.format.LogTxtDefaultFormatStrategy
 import com.xieql.lib.logger.format.LogcatDefaultFormatStrategy
 import com.xieql.lib.logger.format.base.BaseFormatStrategy
 
@@ -28,7 +29,7 @@ open class LogTxtDefaultPrinter:BaseLogTxtPrinter(){
         if(formatStrategy == null){
             synchronized(this){
                 if(formatStrategy == null){
-                    formatStrategy = LogcatDefaultFormatStrategy()
+                    formatStrategy = LogTxtDefaultFormatStrategy()
                 }
             }
         }

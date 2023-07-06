@@ -7,7 +7,7 @@ import com.xieql.lib.logger.format.base.BaseFormatStrategy
 /**
  *  默认文件日志格式策略
  */
-open class TxtDefaultFormatStrategy:BaseFormatStrategy(){
+open class LogTxtDefaultFormatStrategy:BaseFormatStrategy(){
 
     companion object{
         val NEW_LINE = System.getProperty("line.separator")  //换行
