@@ -146,7 +146,7 @@ open class TimeLogDiskStrategy : BaseTimeLogDiskStrategy() {
      * @param logTime 日志打印时间
      * @param section 时间戳对应当前的开始小时和结束小时，[startHour，endHour],eg：[13,14]
      * @return 该日志对应的文件名 ，输出文件名格式：log_xxxx_xx_xx_startHour_endHour.log
-     *   比如按照日志片段(LogSegment)是一个小时计算， 2023年11月20日，11：20分输出的日志对应的日志名称：
+     *   比如按照日志片段(LogTimeSegment)是一个小时计算， 2023年11月20日，11：20分输出的日志对应的日志名称：
      *   log_2023_11_20_11_12.log
      *
      */
