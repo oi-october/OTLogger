@@ -86,7 +86,7 @@ open class WriteHandler(
             //创建文件
             if (!logFile.exists() || !logFile.isFile) {
                 val isCreateSuccess = logFile.createNewFile()
-                if (!isCreateSuccess) {
+                if (!isCreateSuccess ) {
                     debugLog("无法创建日志文件:" + logFilePath)
                     return
                 }
