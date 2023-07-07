@@ -13,7 +13,11 @@ import java.util.*
  * 日志文件管理策略，按时间管理日志文件
  * - 默认按照小时创建日志文件
  * - 默认每个日志文件保存七天
- * -
+ * - 默认文件名 log_年_月_日_时间段.log
+ *     eg：log_2023_02_12_15_16.log ，这里的 15_16 表示该文件储存 15点到 16点的日志
+ *
+ *
+ *
  *
  */
 open class TimeLogDiskStrategy : BaseTimeLogDiskStrategy() {
@@ -87,11 +91,10 @@ open class TimeLogDiskStrategy : BaseTimeLogDiskStrategy() {
      * @param currentTime 当前时间
      * @param logHoldDuration 日志保存时长, 单位是 ms
      */
-    protected open fun clearExpirationLogFile(currentTime: Long, logHoldDuration: Long) {
+    open fun clearExpirationLogFile(currentTime: Long, logHoldDuration: Long) {
         val expirationTime = currentTime - logHoldDuration  //小于该时间都是过期日志
         val expirationFileSection = getLogSection(expirationTime, getSegment())
-        val expirationFileName =
-            getFileName(currentTime, expirationFileSection.first) //在该日志时间之前的日志都是过去的
+        val expirationFileName = getFileName(currentTime, expirationFileSection.first) //在该日志时间之前的日志都是过去的
         debugLog("在[${expirationFileName}]之前的日志，都已过期")
         val logDirFile = File(getLogDir())
         if (!logDirFile.exists() || !logDirFile.isDirectory) return
@@ -115,7 +118,7 @@ open class TimeLogDiskStrategy : BaseTimeLogDiskStrategy() {
      * @return ([startHour,endHour],[startTime,endTime])
      *  比如：([11,12],[11122,112233])
      */
-    protected open fun getLogSection(
+    open fun getLogSection(
         currentTime: Long,
         segment: LogTimeSegment
     ): Pair<Point, Pair<Long, Long>> {
@@ -157,7 +160,7 @@ open class TimeLogDiskStrategy : BaseTimeLogDiskStrategy() {
      *   log_2023_11_20_11_12.log
      *
      */
-    protected open fun getFileName(logTime: Long, section: Point): String {
+    open fun getFileName(logTime: Long, section: Point): String {
         val logTimeStr = logFileNameDateFormat.format(logTime)
         return "${LogPrefix}${logTimeStr}_${section.x}_${section.y}${LogSuffix}"
     }
@@ -175,7 +178,7 @@ open class TimeLogDiskStrategy : BaseTimeLogDiskStrategy() {
 }
 
 /**
- * 按照时间管理日志策略
+ * 按照时间管理日志策略基类，定义了可定制参数
  */
 public abstract class BaseTimeLogDiskStrategy : BaseLogDiskStrategy() {
     /**
