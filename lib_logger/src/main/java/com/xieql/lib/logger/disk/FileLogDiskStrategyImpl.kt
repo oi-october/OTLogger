@@ -7,7 +7,6 @@ import com.xieql.lib.logger.core.appCtx
 import com.xieql.lib.logger.util.debugLog
 import java.io.File
 import java.io.FilenameFilter
-import java.text.FieldPosition
 import java.text.SimpleDateFormat
 import java.util.Arrays
 
@@ -52,15 +51,15 @@ class FileLogDiskStrategyImpl :BaseFileLogDiskStrategy(){
     }
 
     //最少空闲空间 , 单位B
-    private val defaultMinFreeStore by lazy {
+    private val defaultMinFreeStoreOfMB by lazy {
         val total = getTotalStore()
         if(total>2*1024*1024*1024){
             debugLog("总存储 >2GB，至少遗留存储空间:${500} MB")
-            return@lazy 500 * 1024 * 1024
+            return@lazy 500
         }else{
-            val atLeast = total/4L
-            debugLog("总存储 < 2GB，至少遗留存储空间:${atLeast/1024/1024} MB")
-            return@lazy total/4L
+            val atLeast = total/1024/1024/4L  //取 1/4
+            debugLog("总存储 < 2GB，至少遗留存储空间:${atLeast} MB")
+            return@lazy atLeast
         }
     }
 
@@ -71,10 +70,10 @@ class FileLogDiskStrategyImpl :BaseFileLogDiskStrategy(){
             return logFilePath.filePath
         }else{
             val fileName = getFileName(currentTime)
-            val path = getLogDir()+File.separator+fileName  //问价路径
+            val path = getLogDir()+File.separator+fileName  //文件路径
             val filePath = FilePath(getLogFileMaxSizeOfMB()*1024*1024,path)
 
-            if(!checkAndClearLogDir(getMinFreeStoreOfMB() * 1024 *1024)){
+            if(!checkAndClearLogDir(getLogDirMaxStoreOfMB() * 1024 *1024)){
                 return ""
             }
             //检查空闲空间
@@ -117,7 +116,7 @@ class FileLogDiskStrategyImpl :BaseFileLogDiskStrategy(){
     }
 
     override fun getMinFreeStoreOfMB(): Long {
-        return defaultMinFreeStore
+        return defaultMinFreeStoreOfMB
     }
 
     override fun getLogDirMaxStoreOfMB(): Long {
@@ -133,34 +132,37 @@ class FileLogDiskStrategyImpl :BaseFileLogDiskStrategy(){
         val logDirFile =  File(getLogDir())
         if(!logDirFile.exists() || !logDirFile.isDirectory) return true
         val logFileArray = logDirFile.listFiles(FilenameFilter { _, name ->
+            val name = name.trim()
             if(name.startsWith(LogPrefix) && name.endsWith(LogSuffix)){
                 return@FilenameFilter true
             }
             return@FilenameFilter false
         })
         val logList =  logFileArray.asList()
+        if(logList.isNullOrEmpty()) return true
         logList.sortedBy {
             it.name
         }
-        debugLog("排序后日志文件:\n${Arrays.toString(logList.toTypedArray())}")
         var size = 0L
         var startDelete = false
-        for (i in logList.size-1 until 0){
+        for (i in logList.size-1 downTo  0){
             val logFile = logList.get(i)
 
             if(startDelete){  //删除后续日志文件，把后续的文件全部删除了
+                debugLog("删除超出容量文件:${logFile.name}")
                 logFile.delete()
                 continue
             }
-
+            debugLog("name ===== ${i},${logFile.length()}")
             size += logFile.length()
             if(size > logDirMaxStore){ //超过了最大容量，当前和后面的日志文件都会被删除
                 startDelete =  true
+                debugLog("删除超出容量文件:${logFile.name}")
                 logFile.delete()  //删除当前
             }
         }
 
-        debugLog("清理完成后日志文件总大小：${size/1024/1024} MB")
+        debugLog("清理完成后日志文件总大小：${size/1024/1024}MB")
 
         return true
     }

@@ -4,6 +4,7 @@ import android.util.Log
 import com.xieql.lib.logger.LogLevel
 import com.xieql.lib.logger.LogUtils
 import com.xieql.lib.logger.Logger
+import com.xieql.lib.logger.disk.FileLogDiskStrategyImpl
 import com.xieql.lib.logger.disk.TimeLogDiskStrategyImpl
 import com.xieql.lib.logger.format.LogTxtDefaultFormatStrategy
 import com.xieql.lib.logger.format.LogcatDefaultFormatStrategy
@@ -18,7 +19,8 @@ object TestLoggerHelper {
         //initLogger(app)
         //initLogger2(app)
         //initLogger3(app)
-        initLogger4(app)
+        //initLogger4(app)
+        initLogger5()
     }
 
     //测试默认你的日志打印策略
@@ -200,6 +202,33 @@ object TestLoggerHelper {
          */
     }
 
+    //验证文件管理策略
+    fun initLogger5(){
+        fun test5(){
+            Thread{
+                while (true){
+                    Thread.sleep(10)
+                    LogUtils.v(TAG,"V 日志")
+                    LogUtils.d(TAG,"D 日志")
+                    LogUtils.i(TAG,"I 日志")
+                    LogUtils.w(TAG,"W 日志")
+                    LogUtils.w(TAG,"W 日志2",Exception("W 日志2"))
+                    LogUtils.e(TAG,"E 日志")
+                    LogUtils.e(TAG,"E 日志2",Exception("E 日志2"))
+                    LogUtils.e(TAG,Exception("E 日志3"))
+                }
+            }.start()
+        }
+        LogUtils.setLogger(
+            Logger.Builder()
+                .setLogcatPrinter(
+                    LogcatCustomPrinter(true, LogLevel.V, LogcatDefaultFormatStrategy())
+                ).setLogTxtPrinter(
+                    LogTxtCustomPrinter(true,LogLevel.V,LogTxtDefaultFormatStrategy(), FileLogDiskStrategyImpl())
+                ).build()
+        )
+        test5()
+    }
 
 
 
