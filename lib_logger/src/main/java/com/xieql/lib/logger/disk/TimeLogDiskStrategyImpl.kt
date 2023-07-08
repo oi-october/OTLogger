@@ -2,6 +2,7 @@ package com.xieql.lib.logger.disk
 
 import android.graphics.Point
 import com.xieql.lib.logger.LogLevel
+import com.xieql.lib.logger.common.LOG_HEARD_INFO
 import com.xieql.lib.logger.core.appCtx
 import com.xieql.lib.logger.util.debugLog
 import java.io.File
@@ -59,16 +60,21 @@ open class TimeLogDiskStrategy : BaseTimeLogDiskStrategy() {
             //进行存储管理，删除超时文件
             clearExpirationLogFile(currentTime, getLogHoldDurationOfDay() * 24 * 60 * 60 * 1000L)
 
-
             val file = File(filePath.filePath)
 
             if (!file.exists() || !file.isFile) {  //创建新文件 并 添加文件头部内容
-                file.createNewFile()
+                if(file.createNewFile()){
+                    file.appendText(getLogHeardInfo())  //写入文件头
+                }
             }
 
             currentFilepath = filePath
             return filePath.filePath
         }
+    }
+
+    override fun getCurrentLogFilePath(): String? {
+        return currentFilepath?.filePath
     }
 
     //获取日志保存天数
@@ -158,13 +164,19 @@ open class TimeLogDiskStrategy : BaseTimeLogDiskStrategy() {
      * @return 该日志对应的文件名 ，输出文件名格式：log_xxxx_xx_xx_startHour_endHour.log
      *   比如按照日志片段(LogTimeSegment)是一个小时计算， 2023年11月20日，11：20分输出的日志对应的日志名称：
      *   log_2023_11_20_11_12.log
-     *
      */
     open fun getFileName(logTime: Long, section: Point): String {
         val logTimeStr = logFileNameDateFormat.format(logTime)
         return "${LogPrefix}${logTimeStr}_${section.x}_${section.y}${LogSuffix}"
     }
 
+    /**
+     * 获取文件头部信息，创建新文件的时候写入
+     * @return
+     */
+    open fun getLogHeardInfo():String{
+        return LOG_HEARD_INFO
+    }
 
     private class FilePath(val startTime: Long, val endTime: Long, val filePath: String) {
         //是否匹配
@@ -173,6 +185,8 @@ open class TimeLogDiskStrategy : BaseTimeLogDiskStrategy() {
             return isMatch
         }
     }
+
+
 
 
 }

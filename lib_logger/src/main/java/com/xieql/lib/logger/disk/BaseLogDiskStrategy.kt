@@ -17,4 +17,10 @@ abstract class BaseLogDiskStrategy {
      */
     abstract fun getLogPrintPath(logLevel: LogLevel, logBody: String?, bodySize: Long): String?
 
+    /**
+     * 获取当前正在被写入的日志文件路径
+     * @return
+     */
+    abstract fun getCurrentLogFilePath():String?
+
 }
