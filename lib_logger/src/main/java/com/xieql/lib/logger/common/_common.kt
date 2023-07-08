@@ -17,6 +17,7 @@ internal val LOG_HEARD_INFO by lazy{
     builder.append("产品名称: ${android.os.Build.PRODUCT}\n")
     builder.append("设备制造商: ${android.os.Build.MANUFACTURER}\n")
     builder.append("设备型号: ${android.os.Build.MODEL}\n")
+    builder.append("\n\n")
 
     return@lazy builder.toString()
 }

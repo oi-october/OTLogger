@@ -3,16 +3,17 @@ package com.xieql.lib.logger.print
 import android.util.Log
 import com.xieql.lib.logger.LogLevel
 import com.xieql.lib.logger.format.base.BaseFormatStrategy
+import com.xieql.lib.logger.util.debugLog
 
 abstract class BaseLogcatPrinter {
 
     open fun print(logLevel: LogLevel, tag:String?, msg:String?, thr: Throwable?){
         if(!isPrint()){
-            //debugLog("不需要打印到控制台")
+            debugLog("不需要打印到控制台")
             return
         }
         if(logLevel.logLevel<getPrintMinLevel().logLevel){
-            //debugLog("日志级别比最低级别小，不需要打印")
+            debugLog("日志级别比最低级别小，不需要打印")
             return
         }
         val msg = getLogcatFormatStrategy().format(logLevel,tag, msg, thr)

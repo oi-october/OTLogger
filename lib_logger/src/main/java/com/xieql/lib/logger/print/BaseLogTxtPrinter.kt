@@ -2,6 +2,7 @@ package com.xieql.lib.logger.print
 
 import android.os.Handler
 import android.os.HandlerThread
+import android.os.Looper
 import android.os.Message
 import android.util.Log
 import com.xieql.lib.logger.LogLevel
@@ -47,8 +48,7 @@ abstract class BaseLogTxtPrinter {
                 if (handler == null) {
                     val handlerThread = HandlerThread("Logger")
                     handlerThread.start()
-                    handler =
-                        WriteHandler(getLogDirStrategy()) //获取日志文件夹管理策略
+                    handler = WriteHandler(handlerThread.looper,getLogDirStrategy()) //获取日志文件夹管理策略
                 }
             }
         }
@@ -59,8 +59,9 @@ abstract class BaseLogTxtPrinter {
 }
 
 open class WriteHandler(
+    looper: Looper,
     val logDiskStrategy: BaseLogDiskStrategy
-) : Handler() {
+) : Handler(looper) {
 
     override fun handleMessage(msg: Message) {
         val obj = msg.obj as Array<Any>

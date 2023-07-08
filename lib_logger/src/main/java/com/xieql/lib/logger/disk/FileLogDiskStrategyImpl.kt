@@ -167,7 +167,12 @@ class FileLogDiskStrategyImpl :BaseFileLogDiskStrategy(){
      * @return
      */
     open fun getLogHeardInfo():String{
-        return LOG_HEARD_INFO
+         val builder = StringBuilder()
+        builder.append(LOG_HEARD_INFO)
+        builder.append("总存储:${getTotalStore()}")
+        builder.append("空闲存储:${getFreeStore(getLogDir())}")
+        builder.append("\n\n")
+        return builder.toString()
     }
 
     /**
@@ -258,7 +263,7 @@ public abstract class BaseFileLogDiskStrategy:BaseLogDiskStrategy(){
         debugLog("block大小:$blockSize,block数目: $blockCount , 总大小: ${size/1024}KB")
         return size
     }
-    
+
 }
 
 

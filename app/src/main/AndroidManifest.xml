@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <profileable android:shell="true"/>
+
     <application
         android:name=".App"
         android:allowBackup="true"

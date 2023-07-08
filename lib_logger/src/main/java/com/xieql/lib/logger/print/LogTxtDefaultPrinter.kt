@@ -2,7 +2,7 @@ package com.xieql.lib.logger.print
 
 import com.xieql.lib.logger.LogLevel
 import com.xieql.lib.logger.disk.BaseLogDiskStrategy
-import com.xieql.lib.logger.disk.TimeLogDiskStrategy
+import com.xieql.lib.logger.disk.TimeLogDiskStrategyImpl
 import com.xieql.lib.logger.format.LogTxtDefaultFormatStrategy
 import com.xieql.lib.logger.format.base.BaseFormatStrategy
 
@@ -39,7 +39,7 @@ open class LogTxtDefaultPrinter:BaseLogTxtPrinter(){
         if(logDiskStrategy == null){
             synchronized(this){
                 if(logDiskStrategy == null){
-                    logDiskStrategy = TimeLogDiskStrategy()
+                    logDiskStrategy = TimeLogDiskStrategyImpl()
                 }
             }
         }

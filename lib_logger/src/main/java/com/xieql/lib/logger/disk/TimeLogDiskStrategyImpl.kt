@@ -21,7 +21,7 @@ import java.util.*
  *
  *
  */
-open class TimeLogDiskStrategy : BaseTimeLogDiskStrategy() {
+open class TimeLogDiskStrategyImpl : BaseTimeLogDiskStrategy() {
 
     private companion object {
         const val LogPrefix = "log_"
