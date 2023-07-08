@@ -13,11 +13,7 @@
 
 测试方法：
  1. 主动更改系统时间：
-```
-adb shell
-su        
-date -s "YYYYMMDD.HHMMSS" 
-```
+参考：https://blog.csdn.net/su749520/article/details/122353514
 通过上面命令主动修改系统时间，测试日志文件变化
 
 

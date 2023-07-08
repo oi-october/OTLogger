@@ -29,23 +29,23 @@ open class Logger {
      */
     open fun println(level: LogLevel, tag:String?, msg:String?, thr:Throwable?){
         if(this::builder.isInitialized){
-            builder.logcatPrinter.print(level, tag, msg, thr)
-            builder.logTxtPrinter.print(level,tag,  msg, thr)
+            builder.logcatPrinter?.print(level, tag, msg, thr)
+            builder.logTxtPrinter?.print(level,tag,  msg, thr)
         }
     }
 
     class Builder{
         //控制台打印器
-        internal var logcatPrinter:BaseLogcatPrinter = LogcatDefaultPrinter()
+        internal var logcatPrinter:BaseLogcatPrinter? = LogcatDefaultPrinter()
         //日志文件打印机
-        internal var logTxtPrinter:BaseLogTxtPrinter = LogTxtDefaultPrinter()
+        internal var logTxtPrinter:BaseLogTxtPrinter? = LogTxtDefaultPrinter()
 
-        fun setLogcatPrinter(logcatPrinter:LogcatDefaultPrinter): Builder {
+        fun setLogcatPrinter(logcatPrinter:BaseLogcatPrinter?): Builder {
             this.logcatPrinter = logcatPrinter
             return this
         }
 
-        fun setLogTxtPrinter(logTxtPrinter:LogTxtDefaultPrinter): Builder {
+        fun setLogTxtPrinter(logTxtPrinter:BaseLogTxtPrinter?): Builder {
             this.logTxtPrinter = logTxtPrinter
             return this
         }

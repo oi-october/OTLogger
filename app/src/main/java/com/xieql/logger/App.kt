@@ -8,7 +8,7 @@ class App: Application() {
     override fun onCreate() {
         super.onCreate()
 
-        TestLoggerHelper.initLogger(this)
+        TestLoggerHelper.init(this)
     }
 
 }

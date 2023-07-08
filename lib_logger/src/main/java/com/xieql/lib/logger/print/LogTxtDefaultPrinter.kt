@@ -7,14 +7,14 @@ import com.xieql.lib.logger.format.LogTxtDefaultFormatStrategy
 import com.xieql.lib.logger.format.base.BaseFormatStrategy
 
 /**
- * more日志文件打印机
+ * 默认日志文件打印机
  */
 open class LogTxtDefaultPrinter:BaseLogTxtPrinter(){
 
     @Volatile
     protected var formatStrategy:BaseFormatStrategy? = null
     @Volatile
-    protected var logDiskStrategy:BaseLogDiskStrategy? = null
+    protected var diskStrategy:BaseLogDiskStrategy? = null
 
     override fun isPrint(): Boolean {
         return true
@@ -35,15 +35,15 @@ open class LogTxtDefaultPrinter:BaseLogTxtPrinter(){
         return formatStrategy!!
     }
 
-    override fun getLogDirStrategy(): BaseLogDiskStrategy {
-        if(logDiskStrategy == null){
+    override fun getLogDiskStrategy(): BaseLogDiskStrategy {
+        if(diskStrategy == null){
             synchronized(this){
-                if(logDiskStrategy == null){
-                    logDiskStrategy = TimeLogDiskStrategyImpl()
+                if(diskStrategy == null){
+                    diskStrategy = TimeLogDiskStrategyImpl()
                 }
             }
         }
-        return logDiskStrategy!!
+        return diskStrategy!!
     }
 
 }

@@ -39,7 +39,7 @@ abstract class BaseLogTxtPrinter {
     abstract fun getLogcatFormatStrategy(): BaseFormatStrategy
 
     //获取日志文件夹管理策略
-    abstract fun getLogDirStrategy(): BaseLogDiskStrategy
+    abstract fun getLogDiskStrategy(): BaseLogDiskStrategy
 
     //获取写入日志的 Handler
     open fun getWriterHandler(): WriteHandler {
@@ -48,7 +48,7 @@ abstract class BaseLogTxtPrinter {
                 if (handler == null) {
                     val handlerThread = HandlerThread("Logger")
                     handlerThread.start()
-                    handler = WriteHandler(handlerThread.looper,getLogDirStrategy()) //获取日志文件夹管理策略
+                    handler = WriteHandler(handlerThread.looper,getLogDiskStrategy()) //获取日志文件夹管理策略
                 }
             }
         }

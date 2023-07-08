@@ -62,6 +62,9 @@ open class TimeLogDiskStrategyImpl : BaseTimeLogDiskStrategy() {
 
             val file = File(filePath.filePath)
 
+            if(!file.parentFile.exists()){
+                file.parentFile.mkdirs()  //创建文件夹
+            }
             if (!file.exists() || !file.isFile) {  //创建新文件 并 添加文件头部内容
                 if(file.createNewFile()){
                     file.appendText(getLogHeardInfo())  //写入文件头
@@ -100,7 +103,7 @@ open class TimeLogDiskStrategyImpl : BaseTimeLogDiskStrategy() {
     open fun clearExpirationLogFile(currentTime: Long, logHoldDuration: Long) {
         val expirationTime = currentTime - logHoldDuration  //小于该时间都是过期日志
         val expirationFileSection = getLogSection(expirationTime, getSegment())
-        val expirationFileName = getFileName(currentTime, expirationFileSection.first) //在该日志时间之前的日志都是过去的
+        val expirationFileName = getFileName(expirationTime, expirationFileSection.first) //在该日志时间之前的日志都是过去的
         debugLog("在[${expirationFileName}]之前的日志，都已过期")
         val logDirFile = File(getLogDir())
         if (!logDirFile.exists() || !logDirFile.isDirectory) return
@@ -147,9 +150,9 @@ open class TimeLogDiskStrategyImpl : BaseTimeLogDiskStrategy() {
         val statTime = curCalendar.time.time
 
         curCalendar.set(Calendar.HOUR_OF_DAY, section.y)
-        curCalendar.set(Calendar.MINUTE, 59)
-        curCalendar.set(Calendar.SECOND, 59)
-        curCalendar.set(Calendar.MILLISECOND, 999)
+        curCalendar.set(Calendar.MINUTE, 0)
+        curCalendar.set(Calendar.SECOND, 0)
+        curCalendar.set(Calendar.MILLISECOND, 0)
         val endTime = curCalendar.time.time
 
         val timeSection = Pair(statTime, endTime)
@@ -167,7 +170,11 @@ open class TimeLogDiskStrategyImpl : BaseTimeLogDiskStrategy() {
      */
     open fun getFileName(logTime: Long, section: Point): String {
         val logTimeStr = logFileNameDateFormat.format(logTime)
-        return "${LogPrefix}${logTimeStr}_${section.x}_${section.y}${LogSuffix}"
+        var start = "${section.x}"
+        if(start.length==1)start="0${start}"
+        var end = "${section.y}"
+        if(end.length==1)end="0${end}"
+        return "${LogPrefix}${logTimeStr}_${start}_${end}${LogSuffix}"
     }
 
     /**

@@ -86,6 +86,9 @@ class FileLogDiskStrategyImpl :BaseFileLogDiskStrategy(){
                 }
             }
             val file = File(filePath.filePath)
+            if(!file.parentFile.exists()){
+                file.parentFile.mkdirs()  //创建文件夹
+            }
             if (!file.exists() || !file.isFile) {  //创建新文件 并 添加文件头部内容
                 if(file.createNewFile()){
                     file.appendText(getLogHeardInfo())  //写入文件头
