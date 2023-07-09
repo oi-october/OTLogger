@@ -13,7 +13,7 @@ import java.util.Arrays
 /**
  * 日志文件管理策略，按存储管理日志文件
  *   - 默认每个日志文件5MB，参考[getLogFileMaxSizeOfMB]
- *   - 默认日志文件夹最大可容纳 100M日志，超过[getLogDirMaxStoreOfMB]会按照时间顺序删除旧的日志
+ *   - 默认日志文件夹最大可容纳 100M日志，超过[getLogDirMaxStoreOfMB]会按照时间顺序删除旧的日志，直到低于预定值
  *   - 默认文件名 log_年_月_日_时_分_秒.log
  *     eg: log_2023_02_12_16_28_56.log
  *
