@@ -1,9 +1,6 @@
 package com.xieql.lib.logger.format
 
 import com.xieql.lib.logger.LogLevel
-import java.io.PrintWriter
-import java.io.StringWriter
-import java.net.UnknownHostException
 import java.util.logging.Logger
 
 /***
@@ -13,8 +10,6 @@ import java.util.logging.Logger
  *  │ Method stack history
  *  ├┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄
  *  │ Thread information
- *  ├┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄
- *  │ TAG
  *  ├┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄
  *  │ Log message
  *  └──────────────────────────
@@ -43,8 +38,6 @@ class PrettyFormatStrategy :LogcatDefaultFormatStrategy(){
         builder.append("${HORIZONTAL_LINE} ${getMethodTask()}     \n")
         builder.append("${MIDDLE_BORDER}\n")
         builder.append("${HORIZONTAL_LINE} Thread:${Thread.currentThread().name} (${Thread.currentThread().id})\n")
-        builder.append("${MIDDLE_BORDER}\n")
-        builder.append("${HORIZONTAL_LINE} ${tag}\n")
         builder.append("${MIDDLE_BORDER}\n")
         if(thr != null){
             builder.append( "${HORIZONTAL_LINE} $msg \n")

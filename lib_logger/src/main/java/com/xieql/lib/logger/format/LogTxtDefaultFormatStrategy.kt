@@ -1,6 +1,5 @@
 package com.xieql.lib.logger.format
 
-import android.util.Log
 import com.xieql.lib.logger.LogLevel
 import com.xieql.lib.logger.common.PACKAGE_NAME
 
@@ -44,8 +43,7 @@ open class LogTxtDefaultFormatStrategy: BaseFormatStrategy(){
         builder.append(msg) //日志
         builder.append(NEW_LINE)
         if(thr !=null){
-            val errorMsg = Log.getStackTraceString(thr)
-            builder.append(" ")
+            val errorMsg = getStackTraceStringWithPrefix(thr,"    ")
             builder.append(errorMsg)  //异常信息
         }
         val log =  builder.toString()
