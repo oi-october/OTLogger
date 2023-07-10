@@ -1,7 +1,7 @@
 package com.xieql.lib.logger.print
 
 import com.xieql.lib.logger.LogLevel
-import com.xieql.lib.logger.format.base.BaseFormatStrategy
+import com.xieql.lib.logger.format.BaseFormatStrategy
 
 /**
  * 自定义 Loacat 打印机

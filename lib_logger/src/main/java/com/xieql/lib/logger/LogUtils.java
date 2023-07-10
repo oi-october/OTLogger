@@ -17,37 +17,56 @@ public class LogUtils {
     }
 
     public static void v(String tag,@NonNull String msg){
-        v(tag,msg,null);
+        Logger.Companion.getLogger().println(LogLevel.V,tag,msg,null,null);
     }
     public static void v(String tag,@NonNull String msg,Throwable thr){
-        Logger.Companion.getLogger().println(LogLevel.V,tag,msg,thr);
+        Logger.Companion.getLogger().println(LogLevel.V,tag,msg,thr,null);
     }
+    public static void v(String tag,@NonNull String msg,Throwable thr,Object param){
+        Logger.Companion.getLogger().println(LogLevel.V,tag,msg,thr,param);
+    }
+
     public static void d(String tag,String msg){
-        d(tag,msg,null);
+        Logger.Companion.getLogger().println(LogLevel.D,tag,msg,null,null);
     }
     public static void d(String tag,@NonNull String msg,Throwable thr){
-        Logger.Companion.getLogger().println(LogLevel.D,tag,msg,thr);
+        Logger.Companion.getLogger().println(LogLevel.D,tag,msg,thr,null);
     }
+    public static void d(String tag,@NonNull String msg,Throwable thr,Object param){
+        Logger.Companion.getLogger().println(LogLevel.D,tag,msg,thr,param);
+    }
+
     public static void i(String tag,@NonNull String msg){
-        i(tag,msg,null);
+        Logger.Companion.getLogger().println(LogLevel.I,tag,msg,null,null);
     }
     public static void i(String tag,@NonNull String msg,Throwable thr){
-        Logger.Companion.getLogger().println(LogLevel.I,tag,msg,thr);
+        Logger.Companion.getLogger().println(LogLevel.I,tag,msg,thr,null);
     }
+    public static void i(String tag,@NonNull String msg,Throwable thr,Object param){
+        Logger.Companion.getLogger().println(LogLevel.I,tag,msg,thr,param);
+    }
+
     public static void w(String tag,@NonNull String msg){
-        w(tag,msg,null);
+        Logger.Companion.getLogger().println(LogLevel.W,tag,msg,null,null);
     }
     public static void w(String tag,@NonNull String msg,Throwable thr){
-        Logger.Companion.getLogger().println(LogLevel.W,tag,msg,thr);
+        Logger.Companion.getLogger().println(LogLevel.W,tag,msg,thr,null);
     }
+    public static void w(String tag,@NonNull String msg,Throwable thr,Object param){
+        Logger.Companion.getLogger().println(LogLevel.W,tag,msg,thr,param);
+    }
+
     public static void e(String tag,@NonNull String msg){
-        e(tag,msg,null);
+        Logger.Companion.getLogger().println(LogLevel.E,tag,msg,null,null);
     }
     public static void e(String tag,Throwable thr){
-        e(tag,null,thr);
+        Logger.Companion.getLogger().println(LogLevel.E,tag,null,thr,null);
     }
     public static void e(String tag,String msg,Throwable thr){
-        Logger.Companion.getLogger().println(LogLevel.E,tag,msg,thr);
+        Logger.Companion.getLogger().println(LogLevel.E,tag,msg,thr,null);
+    }
+    public static void e(String tag,@NonNull String msg,Throwable thr,Object param){
+        Logger.Companion.getLogger().println(LogLevel.E,tag,msg,thr,param);
     }
 
 

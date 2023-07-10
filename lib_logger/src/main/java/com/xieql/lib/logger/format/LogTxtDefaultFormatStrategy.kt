@@ -1,14 +1,13 @@
 package com.xieql.lib.logger.format
 
-import android.icu.text.IDNA.Info
 import android.util.Log
 import com.xieql.lib.logger.LogLevel
-import com.xieql.lib.logger.format.base.BaseFormatStrategy
+import com.xieql.lib.logger.common.PACKAGE_NAME
 
 /**
  *  默认文件日志格式策略
  */
-open class LogTxtDefaultFormatStrategy:BaseFormatStrategy(){
+open class LogTxtDefaultFormatStrategy: BaseFormatStrategy(){
 
     companion object{
         val NEW_LINE = System.getProperty("line.separator")  //换行
@@ -22,7 +21,13 @@ open class LogTxtDefaultFormatStrategy:BaseFormatStrategy(){
      *  年-月-日 时:分:秒.毫秒 pid-线程id/包名 等级/tag: msg
      *    thr.printStackTrace
      */
-    override fun format(logLevel: LogLevel, tag: String?, msg: String?, thr: Throwable?,packageName: String): String {
+    override fun format(
+        logLevel: LogLevel,
+        tag: String?,
+        msg: String?,
+        thr: Throwable?,
+        param: Any?
+    ): String {
         val builder = StringBuilder()
         builder.append(getNowTimeStr()) //时间
         builder.append(SPACE)
@@ -30,7 +35,7 @@ open class LogTxtDefaultFormatStrategy:BaseFormatStrategy(){
         builder.append(CROSS_BAR)
         builder.append(getTid()) //Tid
         builder.append("/")
-        builder.append(packageName) //包名
+        builder.append(PACKAGE_NAME) //包名
         builder.append(SPACE)
         builder.append(logLevel.describe) //日志级别
         builder.append("/")
@@ -47,8 +52,6 @@ open class LogTxtDefaultFormatStrategy:BaseFormatStrategy(){
         builder.clear()
         return log
     }
-
-
 
 
 }

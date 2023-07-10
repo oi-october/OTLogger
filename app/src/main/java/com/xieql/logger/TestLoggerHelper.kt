@@ -20,7 +20,8 @@ object TestLoggerHelper {
         //initLogger2(app)
         //initLogger3(app)
         //initLogger4(app)
-        initLogger5()
+        //initLogger5()
+        LogUtils.i(TAG,"今天时间戳：${System.currentTimeMillis()}")
     }
 
     //测试默认你的日志打印策略
@@ -113,9 +114,10 @@ object TestLoggerHelper {
                 tag: String?,
                 msg: String?,
                 thr: Throwable?,
-                packageName: String
+                packageName: String,
+                extraParams:Array<Any>?
             ): String {
-                var logBody =  super.format(logLevel, tag, msg, thr, packageName)
+                var logBody =  super.format(logLevel, tag, msg, thr, packageName,extraParams)
                 logBody = " \n -------- $tag start-----\n ${logBody}\n -------$tag end--------"
                 return logBody
             }
@@ -126,9 +128,10 @@ object TestLoggerHelper {
                 tag: String?,
                 msg: String?,
                 thr: Throwable?,
-                packageName: String
+                packageName: String,
+                extraParams:Array<Any>?
             ): String {
-                var logBody =  super.format(logLevel, tag, msg, thr, packageName)
+                var logBody =  super.format(logLevel, tag, msg, thr, packageName,extraParams)
                 logBody = " \n ********* $tag start ********* \n ${logBody}\n  ********* $tag end ********* "
                 return logBody
             }

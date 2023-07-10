@@ -2,7 +2,7 @@ package com.xieql.lib.logger.print
 
 import com.xieql.lib.logger.LogLevel
 import com.xieql.lib.logger.format.LogcatDefaultFormatStrategy
-import com.xieql.lib.logger.format.base.BaseFormatStrategy
+import com.xieql.lib.logger.format.BaseFormatStrategy
 
 /**
  * 默认的Locat 日志打印机
@@ -10,7 +10,7 @@ import com.xieql.lib.logger.format.base.BaseFormatStrategy
 open class LogcatDefaultPrinter:BaseLogcatPrinter(){
 
     @Volatile
-    protected var formatStrategy:BaseFormatStrategy? = null
+    protected var formatStrategy: BaseFormatStrategy? = null
 
     override fun isPrint(): Boolean {
        return true

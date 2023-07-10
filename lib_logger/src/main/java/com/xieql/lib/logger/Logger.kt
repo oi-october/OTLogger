@@ -26,11 +26,12 @@ open class Logger {
      * @param tag
      * @param msg 日志消息
      * @param thr 异常消息
+     * @param param 其他参数
      */
-    open fun println(level: LogLevel, tag:String?, msg:String?, thr:Throwable?){
+    open fun println(level: LogLevel, tag:String?, msg:String?, thr:Throwable?,param:Any?){
         if(this::builder.isInitialized){
-            builder.logcatPrinter?.print(level, tag, msg, thr)
-            builder.logTxtPrinter?.print(level,tag,  msg, thr)
+            builder.logcatPrinter?.print(level, tag, msg, thr,param)
+            builder.logTxtPrinter?.print(level,tag,  msg, thr,param)
         }
     }
 

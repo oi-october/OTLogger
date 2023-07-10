@@ -2,7 +2,7 @@ package com.xieql.lib.logger.print
 
 import com.xieql.lib.logger.LogLevel
 import com.xieql.lib.logger.disk.BaseLogDiskStrategy
-import com.xieql.lib.logger.format.base.BaseFormatStrategy
+import com.xieql.lib.logger.format.BaseFormatStrategy
 
 /**
  * 自定义日志文件打印机
@@ -11,8 +11,8 @@ import com.xieql.lib.logger.format.base.BaseFormatStrategy
  * @property formatStrategy 日志格式策略
  * @property diskStrategy 文件管理策略
  */
-open class LogTxtCustomPrinter(val printable:Boolean,val minLevel:LogLevel
-        ,val formatStrategy:BaseFormatStrategy,val diskStrategy:BaseLogDiskStrategy):BaseLogTxtPrinter(){
+open class LogTxtCustomPrinter(val printable:Boolean, val minLevel:LogLevel
+                               , val formatStrategy: BaseFormatStrategy, val diskStrategy:BaseLogDiskStrategy):BaseLogTxtPrinter(){
 
     override fun isPrint(): Boolean {
         return printable

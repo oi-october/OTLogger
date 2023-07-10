@@ -7,16 +7,16 @@ import android.os.Message
 import android.util.Log
 import com.xieql.lib.logger.LogLevel
 import com.xieql.lib.logger.disk.BaseLogDiskStrategy
-import com.xieql.lib.logger.format.base.BaseFormatStrategy
+import com.xieql.lib.logger.format.BaseFormatStrategy
 import com.xieql.lib.logger.util.debugLog
 import java.io.File
 
-abstract class BaseLogTxtPrinter {
+abstract class BaseLogTxtPrinter:IPrinter{
 
     @Volatile
     private var handler: WriteHandler? = null
 
-    open fun print(logLevel: LogLevel, tag: String?, msg: String?, thr: Throwable?) {
+    override fun print(logLevel: LogLevel, tag: String?, msg: String?, thr: Throwable?, param:Any?) {
         if (!isPrint()) {
             //debugLog("不需要打印到文件")
             return
@@ -25,7 +25,7 @@ abstract class BaseLogTxtPrinter {
             //debugLog("日志级别比最低级别小，不需要打印")
             return
         }
-        val logBody = getLogcatFormatStrategy().format(logLevel, tag, msg, thr) //组装数据
+        val logBody = getLogcatFormatStrategy().format(logLevel, tag, msg, thr,param) //组装数据
         getWriterHandler().sendMessage(getWriterHandler().obtainMessage(999, arrayOf<Any?>(logLevel,logBody)))
     }
 

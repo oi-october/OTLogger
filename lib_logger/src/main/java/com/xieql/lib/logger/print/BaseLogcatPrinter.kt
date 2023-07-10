@@ -2,12 +2,12 @@ package com.xieql.lib.logger.print
 
 import android.util.Log
 import com.xieql.lib.logger.LogLevel
-import com.xieql.lib.logger.format.base.BaseFormatStrategy
+import com.xieql.lib.logger.format.BaseFormatStrategy
 import com.xieql.lib.logger.util.debugLog
 
-abstract class BaseLogcatPrinter {
+abstract class BaseLogcatPrinter:IPrinter{
 
-    open fun print(logLevel: LogLevel, tag:String?, msg:String?, thr: Throwable?){
+    override fun print(logLevel: LogLevel, tag:String?, msg:String?, thr: Throwable?, param:Any?){
         if(!isPrint()){
             debugLog("不需要打印到控制台")
             return
@@ -25,7 +25,7 @@ abstract class BaseLogcatPrinter {
     //最小打印级别，比他低级的日志不会打印
     abstract fun getPrintMinLevel(): LogLevel
     //日志输出格式
-    abstract fun getLogcatFormatStrategy():BaseFormatStrategy
+    abstract fun getLogcatFormatStrategy(): BaseFormatStrategy
 
 
 

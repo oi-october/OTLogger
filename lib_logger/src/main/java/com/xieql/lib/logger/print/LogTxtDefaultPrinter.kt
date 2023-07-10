@@ -4,7 +4,7 @@ import com.xieql.lib.logger.LogLevel
 import com.xieql.lib.logger.disk.BaseLogDiskStrategy
 import com.xieql.lib.logger.disk.TimeLogDiskStrategyImpl
 import com.xieql.lib.logger.format.LogTxtDefaultFormatStrategy
-import com.xieql.lib.logger.format.base.BaseFormatStrategy
+import com.xieql.lib.logger.format.BaseFormatStrategy
 
 /**
  * 默认日志文件打印机
@@ -12,7 +12,7 @@ import com.xieql.lib.logger.format.base.BaseFormatStrategy
 open class LogTxtDefaultPrinter:BaseLogTxtPrinter(){
 
     @Volatile
-    protected var formatStrategy:BaseFormatStrategy? = null
+    protected var formatStrategy: BaseFormatStrategy? = null
     @Volatile
     protected var diskStrategy:BaseLogDiskStrategy? = null
 
