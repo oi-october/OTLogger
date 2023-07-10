@@ -8,7 +8,6 @@ import com.xieql.lib.logger.util.debugLog
 import java.io.File
 import java.io.FilenameFilter
 import java.text.SimpleDateFormat
-import java.util.Arrays
 
 /**
  * 日志文件管理策略，按存储管理日志文件
@@ -21,10 +20,10 @@ import java.util.Arrays
  * 什么时候创建新的日志文件？
  *   - 每个日志写满了会创建一个新的日志文件
  *   - 内存中的日志对象[currentLogFilePath]为null，也会创建一个新的文件，而不是复用上一个未写满的日志文件
- *   - 为了保护系统，当系统可用空闲空间小于最低限制的空闲空间[getMinFreeStoreOfMB]时，不会创建新的日志文件。
+ *   - 为了保护系统，以上都要当系统可用空闲空间大于最低限制的空闲空间[getMinFreeStoreOfMB]时，才会创建新的日志文件。
  *
  */
-class FileLogDiskStrategyImpl :BaseFileLogDiskStrategy(){
+open class FileLogDiskStrategyImpl :BaseFileLogDiskStrategy(){
 
     private companion object{
         const val LogPrefix = "log_"
@@ -40,7 +39,7 @@ class FileLogDiskStrategyImpl :BaseFileLogDiskStrategy(){
     private val defaultLogDirSize = 100L //默认日志文件夹大小
 
     //默认存储地址
-    private val defaultLogDir by lazy {
+    internal val defaultLogDir by lazy {
         val path = appCtx.getExternalFilesDir("")?.absolutePath+ File.separator+"log"
         val file = File(path)
         if(!file.exists()|| !file.isDirectory){
@@ -51,7 +50,7 @@ class FileLogDiskStrategyImpl :BaseFileLogDiskStrategy(){
     }
 
     //最少空闲空间 , 单位B
-    private val defaultMinFreeStoreOfMB by lazy {
+    internal val defaultMinFreeStoreOfMB by lazy {
         val total = getTotalStore()
         if(total>2*1024*1024*1024){
             debugLog("总存储 >2GB，至少遗留存储空间:${500} MB")
@@ -194,18 +193,18 @@ class FileLogDiskStrategyImpl :BaseFileLogDiskStrategy(){
     }
 
     private class FilePath(val logFileMaxSize:Long,val filePath:String) {
-        private val CheckTime = 100
-        private var currentTime = 0
+        private val MaxResetCount = 100
+        private var curResetCount = 0
         private var currentSize = -1L
 
         private val logFile by lazy { File(filePath) }
 
         fun  isMatch():Boolean{
-            if(currentTime > CheckTime || currentSize<0){  //检查200次，查一次文件大小
-                currentTime = 0
+            if(curResetCount > MaxResetCount || currentSize<0){  //检查100次，查一次文件大小
+                curResetCount = 0
                 currentSize = logFile.length()
             }
-            currentTime ++
+            curResetCount ++
             //当前文件大小 < 最大限制大小， 表示匹配
             return currentSize < logFileMaxSize
         }

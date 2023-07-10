@@ -16,10 +16,6 @@ import java.util.*
  * - 默认每个日志文件保存七天
  * - 默认文件名 log_年_月_日_时间段.log
  *     eg：log_2023_02_12_15_16.log ，这里的 15_16 表示该文件储存 15点到 16点的日志
- *
- *
- *
- *
  */
 open class TimeLogDiskStrategyImpl : BaseTimeLogDiskStrategy() {
 
