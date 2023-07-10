@@ -1,6 +1,9 @@
 package com.xieql.lib.logger.format
 
 import com.xieql.lib.logger.LogLevel
+import java.io.PrintWriter
+import java.io.StringWriter
+import java.net.UnknownHostException
 import java.util.logging.Logger
 
 /***
@@ -37,17 +40,17 @@ class PrettyFormatStrategy :LogcatDefaultFormatStrategy(){
     ): String {
         val builder = StringBuilder(" \n")
         builder.append("${TOP_BORDER}\n")
-        builder.append("${HORIZONTAL_LINE}     ${getMethodTask()}     \n")
+        builder.append("${HORIZONTAL_LINE} ${getMethodTask()}     \n")
         builder.append("${MIDDLE_BORDER}\n")
-        builder.append("${HORIZONTAL_LINE}     Thread:${Thread.currentThread().name} (${Thread.currentThread().id})\n")
+        builder.append("${HORIZONTAL_LINE} Thread:${Thread.currentThread().name} (${Thread.currentThread().id})\n")
         builder.append("${MIDDLE_BORDER}\n")
-        builder.append("${HORIZONTAL_LINE}     ${tag}")
+        builder.append("${HORIZONTAL_LINE} ${tag}\n")
         builder.append("${MIDDLE_BORDER}\n")
         if(thr != null){
-            builder.append( "${HORIZONTAL_LINE}     $msg \n")
+            builder.append( "${HORIZONTAL_LINE} $msg \n")
             builder.append(builderThrowableMsg(thr))
         }else{
-            builder.append( "${HORIZONTAL_LINE}     ${msg}\n" )
+            builder.append( "${HORIZONTAL_LINE} ${msg}\n" )
         }
         builder.append("${BOTTOM_BORDER}\n")
         builder.append("\n")
@@ -60,17 +63,18 @@ class PrettyFormatStrategy :LogcatDefaultFormatStrategy(){
             .indexOfFirst {
                 it.className !in fqcnIgnore
             }.let {
-               return@let it +3
+               return@let it + 6
             }
         val element =  elements[index]
-        val elementMsg ="(${element.fileName}:${element.lineNumber})#${element.methodName}"
+        val elementMsg ="${element.className}#${element.methodName}(${element.fileName}:${element.lineNumber})"
         return elementMsg
     }
 
     open fun builderThrowableMsg(throwable: Throwable):String{
-        val thrMsg = getStackTraceString(throwable)
+        val thrMsg = getStackTraceStringWithPrefix(throwable,HORIZONTAL_LINE.toString())
         return thrMsg
     }
+
 
     private val fqcnIgnore = listOf(
         Logger::class.java.name

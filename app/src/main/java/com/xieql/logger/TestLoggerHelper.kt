@@ -8,6 +8,7 @@ import com.xieql.lib.logger.disk.FileLogDiskStrategyImpl
 import com.xieql.lib.logger.disk.TimeLogDiskStrategyImpl
 import com.xieql.lib.logger.format.LogTxtDefaultFormatStrategy
 import com.xieql.lib.logger.format.LogcatDefaultFormatStrategy
+import com.xieql.lib.logger.format.PrettyFormatStrategy
 import com.xieql.lib.logger.print.LogTxtCustomPrinter
 import com.xieql.lib.logger.print.LogcatCustomPrinter
 
@@ -15,13 +16,13 @@ object TestLoggerHelper {
 
     private const val TAG = "TestLogger"
 
-    fun init(app: App){
+    fun init(app: App) {
         //initLogger(app)
         //initLogger2(app)
         //initLogger3(app)
         //initLogger4(app)
         //initLogger5()
-        LogUtils.i(TAG,"今天时间戳：${System.currentTimeMillis()}")
+        initLogger6()
     }
 
     //测试默认你的日志打印策略
@@ -55,23 +56,23 @@ object TestLoggerHelper {
     }
 
     //测试不输出和最低输出日志策略的日志管理策略
-    private fun initLogger2(app: App){
-        fun test2(){
-            LogUtils.v(TAG,"V 日志")
+    private fun initLogger2(app: App) {
+        fun test2() {
+            LogUtils.v(TAG, "V 日志")
             Thread.sleep(1000)
-            LogUtils.d(TAG,"D 日志")
+            LogUtils.d(TAG, "D 日志")
             Thread.sleep(1000)
-            LogUtils.i(TAG,"I 日志")
+            LogUtils.i(TAG, "I 日志")
             Thread.sleep(1000)
-            LogUtils.w(TAG,"W 日志")
+            LogUtils.w(TAG, "W 日志")
             Thread.sleep(1000)
-            LogUtils.w(TAG,"W 日志2",Exception("W 日志2"))
+            LogUtils.w(TAG, "W 日志2", Exception("W 日志2"))
             Thread.sleep(1000)
-            LogUtils.e(TAG,"E 日志")
+            LogUtils.e(TAG, "E 日志")
             Thread.sleep(1000)
-            LogUtils.e(TAG,"E 日志2",Exception("E 日志2"))
+            LogUtils.e(TAG, "E 日志2", Exception("E 日志2"))
             Thread.sleep(1000)
-            LogUtils.e(TAG,Exception("E 日志3"))
+            LogUtils.e(TAG, Exception("E 日志3"))
             Thread.sleep(1000)
         }
         //设置自定义打印机日志
@@ -80,7 +81,12 @@ object TestLoggerHelper {
                 .setLogcatPrinter(
                     LogcatCustomPrinter(true, LogLevel.D, LogcatDefaultFormatStrategy())
                 ).setLogTxtPrinter(
-                    LogTxtCustomPrinter(true,LogLevel.I,LogTxtDefaultFormatStrategy(),TimeLogDiskStrategyImpl())
+                    LogTxtCustomPrinter(
+                        true,
+                        LogLevel.I,
+                        LogTxtDefaultFormatStrategy(),
+                        TimeLogDiskStrategyImpl()
+                    )
                 ).build()
         )
 
@@ -88,51 +94,50 @@ object TestLoggerHelper {
     }
 
     //测试日志自定义格式
-    private fun initLogger3(app: App){
-        fun test3(){
-            LogUtils.v(TAG,"V 日志")
+    private fun initLogger3(app: App) {
+        fun test3() {
+            LogUtils.v(TAG, "V 日志")
             Thread.sleep(1000)
-            LogUtils.d(TAG,"D 日志")
+            LogUtils.d(TAG, "D 日志")
             Thread.sleep(1000)
-            LogUtils.i(TAG,"I 日志")
+            LogUtils.i(TAG, "I 日志")
             Thread.sleep(1000)
-            LogUtils.w(TAG,"W 日志")
+            LogUtils.w(TAG, "W 日志")
             Thread.sleep(1000)
-            LogUtils.w(TAG,"W 日志2",Exception("W 日志2"))
+            LogUtils.w(TAG, "W 日志2", Exception("W 日志2"))
             Thread.sleep(1000)
-            LogUtils.e(TAG,"E 日志")
+            LogUtils.e(TAG, "E 日志")
             Thread.sleep(1000)
-            LogUtils.e(TAG,"E 日志2",Exception("E 日志2"))
+            LogUtils.e(TAG, "E 日志2", Exception("E 日志2"))
             Thread.sleep(1000)
-            LogUtils.e(TAG,Exception("E 日志3"))
+            LogUtils.e(TAG, Exception("E 日志3"))
             Thread.sleep(1000)
         }
         //自定义logcat 输出格式
-        val logcatFormat = object :LogcatDefaultFormatStrategy(){
+        val logcatFormat = object : LogcatDefaultFormatStrategy() {
             override fun format(
                 logLevel: LogLevel,
                 tag: String?,
                 msg: String?,
                 thr: Throwable?,
-                packageName: String,
-                extraParams:Array<Any>?
+                param: Any?
             ): String {
-                var logBody =  super.format(logLevel, tag, msg, thr, packageName,extraParams)
+                var logBody = super.format(logLevel, tag, msg, thr, param)
                 logBody = " \n -------- $tag start-----\n ${logBody}\n -------$tag end--------"
                 return logBody
             }
         }
-        val logTxtFormat = object :LogTxtDefaultFormatStrategy(){
+        val logTxtFormat = object : LogTxtDefaultFormatStrategy() {
             override fun format(
                 logLevel: LogLevel,
                 tag: String?,
                 msg: String?,
                 thr: Throwable?,
-                packageName: String,
-                extraParams:Array<Any>?
+                params: Any?
             ): String {
-                var logBody =  super.format(logLevel, tag, msg, thr, packageName,extraParams)
-                logBody = " \n ********* $tag start ********* \n ${logBody}\n  ********* $tag end ********* "
+                var logBody = super.format(logLevel, tag, msg, thr, params)
+                logBody =
+                    " \n ********* $tag start ********* \n ${logBody}\n  ********* $tag end ********* "
                 return logBody
             }
         }
@@ -142,7 +147,7 @@ object TestLoggerHelper {
                 .setLogcatPrinter(
                     LogcatCustomPrinter(true, LogLevel.V, logcatFormat)
                 ).setLogTxtPrinter(
-                    LogTxtCustomPrinter(true,LogLevel.V,logTxtFormat,TimeLogDiskStrategyImpl())
+                    LogTxtCustomPrinter(true, LogLevel.V, logTxtFormat, TimeLogDiskStrategyImpl())
                 ).build()
         )
 
@@ -151,25 +156,25 @@ object TestLoggerHelper {
     }
 
     //测试时间日志管理器
-    private fun initLogger4(app: App){
-        fun test4(){
-            Thread{
-                while (true){
-                    LogUtils.v(TAG,"V 日志")
+    private fun initLogger4(app: App) {
+        fun test4() {
+            Thread {
+                while (true) {
+                    LogUtils.v(TAG, "V 日志")
                     Thread.sleep(1000)
-                    LogUtils.d(TAG,"D 日志")
+                    LogUtils.d(TAG, "D 日志")
                     Thread.sleep(1000)
-                    LogUtils.i(TAG,"I 日志")
+                    LogUtils.i(TAG, "I 日志")
                     Thread.sleep(1000)
-                    LogUtils.w(TAG,"W 日志")
+                    LogUtils.w(TAG, "W 日志")
                     Thread.sleep(1000)
-                    LogUtils.w(TAG,"W 日志2",Exception("W 日志2"))
+                    LogUtils.w(TAG, "W 日志2", Exception("W 日志2"))
                     Thread.sleep(1000)
-                    LogUtils.e(TAG,"E 日志")
+                    LogUtils.e(TAG, "E 日志")
                     Thread.sleep(1000)
-                    LogUtils.e(TAG,"E 日志2",Exception("E 日志2"))
+                    LogUtils.e(TAG, "E 日志2", Exception("E 日志2"))
                     Thread.sleep(1000)
-                    LogUtils.e(TAG,Exception("E 日志3"))
+                    LogUtils.e(TAG, Exception("E 日志3"))
                     Thread.sleep(1000)
                 }
             }.start()
@@ -179,7 +184,12 @@ object TestLoggerHelper {
                 .setLogcatPrinter(
                     LogcatCustomPrinter(true, LogLevel.V, LogcatDefaultFormatStrategy())
                 ).setLogTxtPrinter(
-                    LogTxtCustomPrinter(true,LogLevel.V,LogTxtDefaultFormatStrategy(),TimeLogDiskStrategyImpl())
+                    LogTxtCustomPrinter(
+                        true,
+                        LogLevel.V,
+                        LogTxtDefaultFormatStrategy(),
+                        TimeLogDiskStrategyImpl()
+                    )
                 ).build()
         )
         test4()
@@ -206,19 +216,19 @@ object TestLoggerHelper {
     }
 
     //验证文件管理策略
-    fun initLogger5(){
-        fun test5(){
-            Thread{
-                while (true){
+    fun initLogger5() {
+        fun test5() {
+            Thread {
+                while (true) {
                     Thread.sleep(10)
-                    LogUtils.v(TAG,"V 日志")
-                    LogUtils.d(TAG,"D 日志")
-                    LogUtils.i(TAG,"I 日志")
-                    LogUtils.w(TAG,"W 日志")
-                    LogUtils.w(TAG,"W 日志2",Exception("W 日志2"))
-                    LogUtils.e(TAG,"E 日志")
-                    LogUtils.e(TAG,"E 日志2",Exception("E 日志2"))
-                    LogUtils.e(TAG,Exception("E 日志3"))
+                    LogUtils.v(TAG, "V 日志")
+                    LogUtils.d(TAG, "D 日志")
+                    LogUtils.i(TAG, "I 日志")
+                    LogUtils.w(TAG, "W 日志")
+                    LogUtils.w(TAG, "W 日志2", Exception("W 日志2"))
+                    LogUtils.e(TAG, "E 日志")
+                    LogUtils.e(TAG, "E 日志2", Exception("E 日志2"))
+                    LogUtils.e(TAG, Exception("E 日志3"))
                 }
             }.start()
         }
@@ -227,16 +237,44 @@ object TestLoggerHelper {
                 .setLogcatPrinter(
                     LogcatCustomPrinter(true, LogLevel.V, LogcatDefaultFormatStrategy())
                 ).setLogTxtPrinter(
-                    LogTxtCustomPrinter(true,LogLevel.V,LogTxtDefaultFormatStrategy(), FileLogDiskStrategyImpl())
+                    LogTxtCustomPrinter(
+                        true,
+                        LogLevel.V,
+                        LogTxtDefaultFormatStrategy(),
+                        FileLogDiskStrategyImpl()
+                    )
                 ).build()
         )
         test5()
     }
 
+    //使用 PrettyFormatStrategy 格式输出日志
+    fun initLogger6() {
+        fun test6() {
 
+            try {
+                throw Exception("异常")
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+            LogUtils.v(TAG, "V 日志")
+            LogUtils.d(TAG, "D 日志")
+            LogUtils.i(TAG, "I 日志")
+            LogUtils.w(TAG, "W 日志")
+            LogUtils.w(TAG, "W 日志2", Exception("W 日志2"))
+            LogUtils.e(TAG, "E 日志")
+            LogUtils.e(TAG, "E 日志2", Exception("E 日志2"))
+            LogUtils.e(TAG, Exception("E 日志3"))
 
-
-
+        }
+        LogUtils.setLogger(
+            Logger.Builder()
+                .setLogcatPrinter(
+                    LogcatCustomPrinter(true, LogLevel.V, PrettyFormatStrategy())
+                ).build()
+        )
+        test6()
+    }
 
 
 

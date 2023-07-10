@@ -4,6 +4,9 @@ import android.util.Log
 import com.xieql.lib.logger.common.PACKAGE_NAME
 import com.xieql.lib.logger.LogLevel
 import com.xieql.lib.logger.core.TimeKt
+import java.io.PrintWriter
+import java.io.StringWriter
+import java.net.UnknownHostException
 
 /**
  * 基础的输出格式
@@ -75,7 +78,44 @@ abstract class BaseFormatStrategy {
      * @return
      */
     fun getStackTraceString(thr: Throwable?):String{
-        return Log.getStackTraceString(thr)
+        return getStackTraceStringWithPrefix(thr,"")
+    }
+
+    /**
+     * 获取异常堆栈信息，并且在每一行开头加入头部信息[prefix]
+     * @param thr
+     * @param prefix
+     * @return
+     */
+    fun getStackTraceStringWithPrefix(thr: Throwable?,prefix:String):String{
+        if (thr == null) {
+            return "$prefix"
+        }
+
+        // This is to reduce the amount of log spew that apps do in the non-error
+        // condition of the network being unavailable.
+
+        // This is to reduce the amount of log spew that apps do in the non-error
+        // condition of the network being unavailable.
+        var t: Throwable? = thr
+        while (t != null) {
+            if (t is UnknownHostException) {
+                return "$prefix"
+            }
+            t = t.cause
+        }
+
+
+        val sw = StringWriter()
+        val pw = object : PrintWriter(sw){
+            override fun println(x: Any?) {
+                print("$prefix ")  //改写打印日志，添加自己的格式
+                super.println(x)
+            }
+        }
+        thr.printStackTrace(pw)
+        pw.flush()
+        return sw.toString()
     }
 
 
