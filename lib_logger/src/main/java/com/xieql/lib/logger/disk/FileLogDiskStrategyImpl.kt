@@ -8,6 +8,7 @@ import com.xieql.lib.logger.util.debugLog
 import java.io.File
 import java.io.FilenameFilter
 import java.text.SimpleDateFormat
+import java.util.Arrays
 
 /**
  * 日志文件管理策略，按存储管理日志文件
@@ -137,11 +138,17 @@ open class FileLogDiskStrategyImpl :BaseFileLogDiskStrategy(){
             }
             return@FilenameFilter false
         })
-        val logList =  logFileArray.asList()
+        var logList =  logFileArray.asList()
         if(logList.isNullOrEmpty()) return true
-        logList.sortedBy {
+        logList = logList.sortedBy {
             it.name
         }
+
+        /*debugLog("排序-------------")
+        logList.forEach {
+            debugLog("文件：${it.name}")
+        }*/
+
         var size = 0L
         var startDelete = false
         for (i in logList.size-1 downTo  0){

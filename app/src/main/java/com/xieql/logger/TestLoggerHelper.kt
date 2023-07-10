@@ -4,6 +4,7 @@ import android.util.Log
 import com.xieql.lib.logger.LogLevel
 import com.xieql.lib.logger.LogUtils
 import com.xieql.lib.logger.Logger
+import com.xieql.lib.logger.disk.FileAndTimeDiskStrategyImpl
 import com.xieql.lib.logger.disk.FileLogDiskStrategyImpl
 import com.xieql.lib.logger.disk.TimeLogDiskStrategyImpl
 import com.xieql.lib.logger.format.LogTxtDefaultFormatStrategy
@@ -248,9 +249,42 @@ object TestLoggerHelper {
         test5()
     }
 
-    //使用 PrettyFormatStrategy 格式输出日志
+    //验证管理策略:FileAndTimeDiskStrategyImpl
     fun initLogger6() {
         fun test6() {
+            Thread {
+                while (true) {
+                    Thread.sleep(10)
+                    LogUtils.v(TAG, "V 日志")
+                    LogUtils.d(TAG, "D 日志")
+                    LogUtils.i(TAG, "I 日志")
+                    LogUtils.w(TAG, "W 日志")
+                    LogUtils.w(TAG, "W 日志2", Exception("W 日志2"))
+                    LogUtils.e(TAG, "E 日志")
+                    LogUtils.e(TAG, "E 日志2", Exception("E 日志2"))
+                    LogUtils.e(TAG, Exception("E 日志3"))
+                }
+            }.start()
+        }
+        LogUtils.setLogger(
+            Logger.Builder()
+                .setLogcatPrinter(
+                    LogcatCustomPrinter(true, LogLevel.V, LogcatDefaultFormatStrategy())
+                ).setLogTxtPrinter(
+                    LogTxtCustomPrinter(
+                        true,
+                        LogLevel.V,
+                        LogTxtDefaultFormatStrategy(),
+                        FileAndTimeDiskStrategyImpl()
+                    )
+                ).build()
+        )
+        test6()
+    }
+
+    //使用 PrettyFormatStrategy 格式输出日志
+    fun initLogger7() {
+        fun test7() {
 
             try {
                 throw Exception("异常")
@@ -273,8 +307,9 @@ object TestLoggerHelper {
                     LogcatCustomPrinter(true, LogLevel.V, PrettyFormatStrategy())
                 ).build()
         )
-        test6()
+        test7()
     }
+
 
 
 

@@ -26,7 +26,7 @@ open class FileAndTimeDiskStrategyImpl : BaseLogDiskStrategy() {
     }
 
     private val defaultFileSize =  5L   //默认文件大小
-    private val defaultLogDirSize = 100L //默认日志文件夹大小
+    private val defaultLogDirSize = 20L //默认日志文件夹大小
 
     //时间管理
     private val timeLogDiskStrategy = TimeLogDiskStrategyImpl()
