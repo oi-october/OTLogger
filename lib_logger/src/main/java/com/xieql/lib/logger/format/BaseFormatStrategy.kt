@@ -1,25 +1,25 @@
 package com.xieql.lib.logger.format
 
-import android.util.Log
-import com.xieql.lib.logger.common.PACKAGE_NAME
 import com.xieql.lib.logger.LogLevel
-import com.xieql.lib.logger.core.TimeKt
 import java.io.PrintWriter
 import java.io.StringWriter
 import java.net.UnknownHostException
+import java.text.SimpleDateFormat
 
 /**
  * 基础的输出格式
  */
 abstract class BaseFormatStrategy {
 
+
+    private val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS")
+
     /**
      * @param logLevel  日志等级
      * @param tag  日志tag
      * @param msg  日志内容
      * @param thr  异常日志内存
-     * @param packageName 打印日志的包的包名
-     * @param extraParams 拓展参数，传入其他额外的数据，可以是额外的日志信息、日志格式信息等
+     * @param param 拓展参数，传入其他额外的数据，可以是额外的日志信息、日志格式信息等
      * @return 日志输出格式
      */
     abstract fun format(logLevel: LogLevel, tag:String?, msg:String?, thr: Throwable?,param:Any? = null):String
@@ -29,7 +29,7 @@ abstract class BaseFormatStrategy {
      *  时间格式 ：yyyy-MM-dd HH:mm:ss.SSS
      */
     fun getNowTimeStr():String{
-        return TimeKt.nowStr
+        return dateFormat.format(System.currentTimeMillis())
     }
 
     /**
