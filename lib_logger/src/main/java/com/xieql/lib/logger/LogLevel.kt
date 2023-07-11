@@ -11,5 +11,7 @@ enum class LogLevel(val describe:String,val logLevel:Int) {
     I("I",Log.INFO),
     W("W",Log.WARN),
     E("E",Log.ERROR),
-    ASSERT("ASSERT",Log.ASSERT) //断言日志
+    WTF("E",Log.ERROR)  //Log.wtf 输出的日志级别也是 E ,保持和 Log 一致
+    ;
+
 }

@@ -17,6 +17,7 @@ object TestLoggerHelper {
 
     private const val TAG = "TestLogger"
 
+
     fun init(app: App) {
         //initLogger(app)
         //initLogger2(app)
@@ -266,6 +267,8 @@ object TestLoggerHelper {
                 }
             }.start()
         }
+        Log.wtf(TAG,"这是WTF",Exception("异常了"))
+
         LogUtils.setLogger(
             Logger.Builder()
                 .setLogcatPrinter(

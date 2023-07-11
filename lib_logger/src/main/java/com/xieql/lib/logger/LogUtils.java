@@ -1,5 +1,6 @@
 package com.xieql.lib.logger;
 
+
 import androidx.annotation.NonNull;
 
 /**
@@ -68,8 +69,10 @@ public class LogUtils {
     public static void e(String tag,@NonNull String msg,Throwable thr,Object param){
         Logger.Companion.getLogger().println(LogLevel.E,tag,msg,thr,param);
     }
-
-
+    //糟糕的异常
+    public static void wtf(String tag,@NonNull String msg, Throwable thr,Object param){
+        Logger.Companion.getLogger().println(LogLevel.WTF,tag,msg,thr,param);
+    }
 
 
 
