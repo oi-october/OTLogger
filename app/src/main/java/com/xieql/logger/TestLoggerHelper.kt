@@ -4,6 +4,7 @@ import android.util.Log
 import com.xieql.lib.logger.LogLevel
 import com.xieql.lib.logger.LogUtils
 import com.xieql.lib.logger.Logger
+import com.xieql.lib.logger.crash.DefaultCrashStrategyImpl
 import com.xieql.lib.logger.disk.FileAndTimeDiskStrategyImpl
 import com.xieql.lib.logger.disk.FileLogDiskStrategyImpl
 import com.xieql.lib.logger.disk.TimeLogDiskStrategyImpl
@@ -24,7 +25,9 @@ object TestLoggerHelper {
         //initLogger3(app)
         //initLogger4(app)
         //initLogger5()
-        initLogger6()
+        //initLogger6()
+
+        initLogger8(app)
     }
 
     //测试默认你的日志打印策略
@@ -311,6 +314,24 @@ object TestLoggerHelper {
                 ).build()
         )
         test7()
+    }
+
+    //验证异常捕获
+    fun initLogger8(app: App){
+       LogUtils.setLogger(Logger.Builder().setCrashStrategy(DefaultCrashStrategyImpl(app)).build())
+
+        //Thread{
+            Thread.sleep(5000)
+            LogUtils.v(TAG, "V 日志")
+            LogUtils.d(TAG, "D 日志")
+            LogUtils.i(TAG, "I 日志")
+            LogUtils.w(TAG, "W 日志")
+            LogUtils.w(TAG, "W 日志2", Exception("W 日志2"))
+            LogUtils.e(TAG, "E 日志")
+            LogUtils.e(TAG, "E 日志2", Exception("E 日志2"))
+            LogUtils.e(TAG, Exception("E 日志3"))
+            var a =  1/0
+        //}.start()
     }
 
 

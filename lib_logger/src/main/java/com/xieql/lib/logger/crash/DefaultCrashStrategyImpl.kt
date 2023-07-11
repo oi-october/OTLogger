@@ -3,7 +3,9 @@ package com.xieql.lib.logger.crash
 import android.app.Activity
 import android.app.Application
 import android.os.Bundle
+import android.util.Log
 import com.xieql.lib.logger.LogUtils
+import com.xieql.lib.logger.util.debugLog
 import java.lang.ref.WeakReference
 
 /**
@@ -22,14 +24,25 @@ class DefaultCrashStrategyImpl(val application: Application): BaseCrashStrategy(
 
     private val activityList = arrayListOf<WeakReference<Activity>>()
 
-    init {
-        init()
+    override fun init() {
+        super.init()
         collectAllActivity()
     }
 
     override fun handleException(t: Thread?, e: Throwable?): Boolean {
+
+        debugLog("捕获到异常：${Thread.currentThread().name}")
+
         LogUtils.wtf(TAG,"线程(${t?.name}) 崩溃",e,null)
         finishActivity()
+
+        if(t?.name.contentEquals("main")){
+            Thread{
+                Thread.sleep(2000)
+                getDefaultUncaughtExceptionHandler().uncaughtException(t,e)
+            }.start()
+        }
+
         return true
     }
 
@@ -62,8 +75,7 @@ class DefaultCrashStrategyImpl(val application: Application): BaseCrashStrategy(
             override fun onActivitySaveInstanceState(p0: Activity, p1: Bundle) {}
 
             override fun onActivityDestroyed(p0: Activity) {
-                LogUtils.v(TAG, "销毁Activity:${p0}")
-
+                LogUtils.v(TAG, "Activity:${p0}已销毁")
                 synchronized(this){
                     var target: WeakReference<Activity>? = null
                     activityList.forEach {

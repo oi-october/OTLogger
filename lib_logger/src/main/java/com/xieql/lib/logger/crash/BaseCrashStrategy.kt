@@ -13,7 +13,7 @@ abstract class BaseCrashStrategy: Thread.UncaughtExceptionHandler{
     private lateinit var mDefHandler:UncaughtExceptionHandler
 
 
-    fun init(){
+    open fun init(){
         if(!this::mDefHandler.isInitialized){
             mDefHandler = Thread.getDefaultUncaughtExceptionHandler()
         }
@@ -21,18 +21,21 @@ abstract class BaseCrashStrategy: Thread.UncaughtExceptionHandler{
     }
 
     override fun uncaughtException(t: Thread?, e: Throwable?) {
-        if(!handleException(t,e) && mDefHandler != null){
+        if(!handleException(t,e)){
             //如果没有处理异常则让系统默认的异常处理器来处理
-            mDefHandler.uncaughtException(t,e)
-        }else{
-            killProcess()
+            getDefaultUncaughtExceptionHandler().uncaughtException(t,e)
         }
     }
 
-    open fun killProcess(){
-        Process.killProcess(Process.myPid())
-        exitProcess(1)
+    /**
+     * 获取系统默认的 UncaughtExceptionHandler
+     * @return
+     */
+    protected fun getDefaultUncaughtExceptionHandler():UncaughtExceptionHandler{
+        return mDefHandler
     }
+
+
     /**
      * 自定义错误处理
      * @param t

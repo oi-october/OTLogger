@@ -1,5 +1,6 @@
 package com.xieql.lib.logger
 
+import com.xieql.lib.logger.crash.BaseCrashStrategy
 import com.xieql.lib.logger.print.BaseLogTxtPrinter
 import com.xieql.lib.logger.print.BaseLogcatPrinter
 import com.xieql.lib.logger.print.LogcatDefaultPrinter
@@ -18,6 +19,8 @@ open class Logger {
     private lateinit var builder: Builder
     private constructor(build: Builder){
         builder = build
+        //初始化异常捕获机制
+        builder.crashStrategy?.init()
     }
 
     /**
@@ -41,6 +44,8 @@ open class Logger {
         //日志文件打印机
         internal var logTxtPrinter:BaseLogTxtPrinter? = LogTxtDefaultPrinter()
 
+        internal var crashStrategy:BaseCrashStrategy? = null
+
         fun setLogcatPrinter(logcatPrinter:BaseLogcatPrinter?): Builder {
             this.logcatPrinter = logcatPrinter
             return this
@@ -48,6 +53,11 @@ open class Logger {
 
         fun setLogTxtPrinter(logTxtPrinter:BaseLogTxtPrinter?): Builder {
             this.logTxtPrinter = logTxtPrinter
+            return this
+        }
+
+        fun setCrashStrategy(crashStrategy: BaseCrashStrategy):Builder{
+            this.crashStrategy = crashStrategy
             return this
         }
 
