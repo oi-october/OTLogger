@@ -7,11 +7,6 @@ import androidx.annotation.NonNull;
  * 外部使用该类中的静态方法打印日志
  */
 public class LogUtils {
-
-    //初始化默认的Logger
-    static {
-        // todo 初始化默认的Logger
-    }
     //设置 Logger
     public static void setLogger(@NonNull Logger myLog){
         Logger.Companion.setLogger(myLog);

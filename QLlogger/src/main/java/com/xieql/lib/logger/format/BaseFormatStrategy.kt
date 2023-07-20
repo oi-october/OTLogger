@@ -19,7 +19,7 @@ abstract class BaseFormatStrategy {
      * @param tag  日志tag
      * @param msg  日志内容
      * @param thr  异常日志内存
-     * @param param 拓展参数，传入其他额外的数据，可以是额外的日志信息、日志格式信息等
+     * @param param 拓展参数，传入其他额外的数据，可 以是额外的日志信息、日志格式信息等
      * @return 日志输出格式
      */
     abstract fun format(logLevel: LogLevel, tag:String?, msg:String?, thr: Throwable?,param:Any? = null):String
