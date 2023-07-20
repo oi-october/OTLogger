@@ -11,7 +11,7 @@
 
 ```
 repositories {
-        maven { url 'https://jitpack.io' }
+     maven { url 'https://jitpack.io' }
 }
 ```
 
@@ -34,7 +34,6 @@ LogUtils.e(TAG, "E级别 日志")
 默认Logger 打印日志到 Logcat的同时会保存日志到 storage/emulated/0/Android/data/packageName/files/log 下。默认Logger会按与Log一致的格式输出到控制台和日志文件，并且日志文件仅仅保留7天，超过时间的日志文件自动删除。
 
 如果希望定制日志输出格式、日志输出级别、日志保存文件夹地址，见**高级功能**。
-
 
 
 ## lib_logger 设计模型

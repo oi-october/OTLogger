@@ -27,6 +27,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Android-Logger"
-include ':app'
-include ':OTLogger'
+rootProject.name = "Android-OTLogger"
+include ':app-demo'
+include ':otLogger'
