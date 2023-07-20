@@ -1,10 +1,12 @@
 package com.xieql.logger
 
+import android.text.format.Time
 import android.util.Log
 import com.xieql.lib.logger.LogLevel
 import com.xieql.lib.logger.LogUtils
 import com.xieql.lib.logger.Logger
 import com.xieql.lib.logger.crash.DefaultCrashStrategyImpl
+import com.xieql.lib.logger.disk.BaseTimeLogDiskStrategy
 import com.xieql.lib.logger.disk.FileAndTimeDiskStrategyImpl
 import com.xieql.lib.logger.disk.FileLogDiskStrategyImpl
 import com.xieql.lib.logger.disk.TimeLogDiskStrategyImpl
@@ -12,330 +14,161 @@ import com.xieql.lib.logger.format.LogTxtDefaultFormatStrategy
 import com.xieql.lib.logger.format.LogcatDefaultFormatStrategy
 import com.xieql.lib.logger.format.PrettyFormatStrategy
 import com.xieql.lib.logger.print.LogTxtCustomPrinter
+import com.xieql.lib.logger.print.LogTxtDefaultPrinter
 import com.xieql.lib.logger.print.LogcatCustomPrinter
+import com.xieql.lib.logger.print.LogcatDefaultPrinter
 
 object TestLoggerHelper {
 
     private const val TAG = "TestLogger"
 
-
     fun init(app: App) {
-        //initLogger(app)
-        //initLogger2(app)
-        //initLogger3(app)
-        //initLogger4(app)
-        //initLogger5()
-        //initLogger6()
-
-        initLogger8(app)
+        //userDefaultLogger()
+        //initLoggerWithDefault()
+        initLoggerWithPrettyFormat()
     }
 
-    //测试默认你的日志打印策略
-    private fun initLogger(app: App) {
-        fun test() {
-            for (i in 0 until 20) {
-                Thread {
-                    Thread.sleep(30000)
-                    val TAG = TAG + "${Thread.currentThread().name}"
-                    for (i in 0 until 5000) {
-                        LogUtils.e(TAG, "----------------开始输出${i}---------------")
-                        LogUtils.i(TAG, "测试")
-                        LogUtils.d(TAG, "Pid=${android.os.Process.myPid()}")
-                        LogUtils.w(TAG, "Uid=${android.os.Process.myUid()}")
-                        LogUtils.w(TAG, "Tid=${android.os.Process.myTid()}")
-                        LogUtils.v(TAG, "MainTid=${Thread.currentThread().id}")
-                        LogUtils.i(null, "${null}")
-                        LogUtils.w(TAG, "警告", Exception("这是一个警告"))
-                        LogUtils.e(TAG, "异常1")
-                        LogUtils.e(TAG, Exception("这是异常2"))
-                        LogUtils.e(TAG, "异常3", Exception("这是异常3"))
-                        LogUtils.e(TAG, "----------------结束输出${i}---------------")
-                        Thread.sleep(50)
-                    }
-                }.start()
+    fun userDefaultLogger(app: App) {
+        val logger = Logger.Builder()
+            .setCrashStrategy(DefaultCrashStrategyImpl(app)) //设置捕获策略
+            .build()
+        LogUtils.setLogger(logger)
+        LogUtils.v(TAG, "V 日志")
+        LogUtils.d(TAG, "D 日志")
+        LogUtils.i(TAG, "I 日志")
+        LogUtils.w(TAG, "W 日志")
+        LogUtils.e(TAG, "E 异常", Exception("这是一个异常"))
+
+        //定制一个Logger
+        val logger2 = Logger.Builder()
+            .setLogTxtPrinter(
+                LogTxtCustomPrinter(
+                    true                    //是否打印到日志文件
+                    , LogLevel.V                   //最低打印日志级别
+                    , LogTxtDefaultFormatStrategy() //日志格式
+                    , TimeLogDiskStrategyImpl()   //日志文件管理策略
+                )
+            )
+            .build()
+//设置使用该Logger
+        LogUtils.setLogger(logger)
+    }
+
+
+    fun initLoggerWithDefault() {
+        //自定义一个 Logger ，保持和默认的Logcat一致
+        val logger = Logger.Builder()
+            .setLogcatPrinter(LogcatDefaultPrinter()) //设置默认的Logcat Printer
+            .setLogTxtPrinter(LogTxtDefaultPrinter()) //设置默认的LogTxt Printer
+            .build()
+        LogUtils.setLogger(logger)
+
+        LogUtils.v(TAG, "V 日志")
+        LogUtils.d(TAG, "D 日志")
+        LogUtils.i(TAG, "I 日志")
+        LogUtils.w(TAG, "W 日志")
+        LogUtils.e(TAG, "E 异常", Exception("这是一个异常"))
+    }
+
+    fun initLoggerWithPrettyFormat() {
+        //自定义一个 Logger ，Logcat 使用 PrettyFormatStrategy 格式
+        val logger = Logger.Builder()
+            .setLogcatPrinter(
+                LogcatCustomPrinter(
+                    true,
+                    LogLevel.V,
+                    PrettyFormatStrategy()
+                )
+            ) //设置Logcat Printer
+            .setLogTxtPrinter(LogTxtDefaultPrinter()) //设置默认的LogTxt Printer
+            .build()
+        LogUtils.setLogger(logger)
+
+        LogUtils.v(TAG, "V 日志")
+        LogUtils.d(TAG, "D 日志")
+        LogUtils.i(TAG, "I 日志")
+        LogUtils.w(TAG, "W 日志")
+        LogUtils.e(TAG, "E 异常", Exception("这是一个异常"))
+    }
+
+
+    fun initLoggerWithFileAndTimeDiskStrategy() {
+
+        //我的日志管理策略
+        val fileAndTimeDiskStrategyImpl = object : FileAndTimeDiskStrategyImpl() {
+            override fun getLogDir(): String {
+                return super.getLogDir()  //我的日志文件夹
             }
 
-
-        }
-        test()
-    }
-
-    //测试不输出和最低输出日志策略的日志管理策略
-    private fun initLogger2(app: App) {
-        fun test2() {
-            LogUtils.v(TAG, "V 日志")
-            Thread.sleep(1000)
-            LogUtils.d(TAG, "D 日志")
-            Thread.sleep(1000)
-            LogUtils.i(TAG, "I 日志")
-            Thread.sleep(1000)
-            LogUtils.w(TAG, "W 日志")
-            Thread.sleep(1000)
-            LogUtils.w(TAG, "W 日志2", Exception("W 日志2"))
-            Thread.sleep(1000)
-            LogUtils.e(TAG, "E 日志")
-            Thread.sleep(1000)
-            LogUtils.e(TAG, "E 日志2", Exception("E 日志2"))
-            Thread.sleep(1000)
-            LogUtils.e(TAG, Exception("E 日志3"))
-            Thread.sleep(1000)
-        }
-        //设置自定义打印机日志
-        LogUtils.setLogger(
-            Logger.Builder()
-                .setLogcatPrinter(
-                    LogcatCustomPrinter(true, LogLevel.D, LogcatDefaultFormatStrategy())
-                ).setLogTxtPrinter(
-                    LogTxtCustomPrinter(
-                        true,
-                        LogLevel.I,
-                        LogTxtDefaultFormatStrategy(),
-                        TimeLogDiskStrategyImpl()
-                    )
-                ).build()
-        )
-
-        test2()
-    }
-
-    //测试日志自定义格式
-    private fun initLogger3(app: App) {
-        fun test3() {
-            LogUtils.v(TAG, "V 日志")
-            Thread.sleep(1000)
-            LogUtils.d(TAG, "D 日志")
-            Thread.sleep(1000)
-            LogUtils.i(TAG, "I 日志")
-            Thread.sleep(1000)
-            LogUtils.w(TAG, "W 日志")
-            Thread.sleep(1000)
-            LogUtils.w(TAG, "W 日志2", Exception("W 日志2"))
-            Thread.sleep(1000)
-            LogUtils.e(TAG, "E 日志")
-            Thread.sleep(1000)
-            LogUtils.e(TAG, "E 日志2", Exception("E 日志2"))
-            Thread.sleep(1000)
-            LogUtils.e(TAG, Exception("E 日志3"))
-            Thread.sleep(1000)
-        }
-        //自定义logcat 输出格式
-        val logcatFormat = object : LogcatDefaultFormatStrategy() {
-            override fun format(
-                logLevel: LogLevel,
-                tag: String?,
-                msg: String?,
-                thr: Throwable?,
-                param: Any?
-            ): String {
-                var logBody = super.format(logLevel, tag, msg, thr, param)
-                logBody = " \n -------- $tag start-----\n ${logBody}\n -------$tag end--------"
-                return logBody
+            override fun getMinFreeStoreOfMB(): Long {
+                return 100  //设置系统必须至少还有100MB才能继续创建日志文件
             }
-        }
-        val logTxtFormat = object : LogTxtDefaultFormatStrategy() {
-            override fun format(
-                logLevel: LogLevel,
-                tag: String?,
-                msg: String?,
-                thr: Throwable?,
-                params: Any?
-            ): String {
-                var logBody = super.format(logLevel, tag, msg, thr, params)
-                logBody =
-                    " \n ********* $tag start ********* \n ${logBody}\n  ********* $tag end ********* "
-                return logBody
+
+            override fun getLogDirMaxStoreOfMB(): Long {
+                return 200  //设置日志文件夹最多容纳多少MB的日志
             }
-        }
 
-        LogUtils.setLogger(
-            Logger.Builder()
-                .setLogcatPrinter(
-                    LogcatCustomPrinter(true, LogLevel.V, logcatFormat)
-                ).setLogTxtPrinter(
-                    LogTxtCustomPrinter(true, LogLevel.V, logTxtFormat, TimeLogDiskStrategyImpl())
-                ).build()
-        )
-
-        test3()
-
-    }
-
-    //测试时间日志管理器
-    private fun initLogger4(app: App) {
-        fun test4() {
-            Thread {
-                while (true) {
-                    LogUtils.v(TAG, "V 日志")
-                    Thread.sleep(1000)
-                    LogUtils.d(TAG, "D 日志")
-                    Thread.sleep(1000)
-                    LogUtils.i(TAG, "I 日志")
-                    Thread.sleep(1000)
-                    LogUtils.w(TAG, "W 日志")
-                    Thread.sleep(1000)
-                    LogUtils.w(TAG, "W 日志2", Exception("W 日志2"))
-                    Thread.sleep(1000)
-                    LogUtils.e(TAG, "E 日志")
-                    Thread.sleep(1000)
-                    LogUtils.e(TAG, "E 日志2", Exception("E 日志2"))
-                    Thread.sleep(1000)
-                    LogUtils.e(TAG, Exception("E 日志3"))
-                    Thread.sleep(1000)
-                }
-            }.start()
-        }
-        LogUtils.setLogger(
-            Logger.Builder()
-                .setLogcatPrinter(
-                    LogcatCustomPrinter(true, LogLevel.V, LogcatDefaultFormatStrategy())
-                ).setLogTxtPrinter(
-                    LogTxtCustomPrinter(
-                        true,
-                        LogLevel.V,
-                        LogTxtDefaultFormatStrategy(),
-                        TimeLogDiskStrategyImpl()
-                    )
-                ).build()
-        )
-        test4()
-
-        /**
-         * 测试数据
-        adb shell
-        date "2023-10-01 10:01:00"
-        date "2023-10-01 11:01:00"
-        date "2023-10-01 12:00:00"
-        date "2023-10-01 13:01:00"
-        date "2023-10-01 16:01:00"
-        date "2023-10-02 11:00:00"
-        date "2023-10-02 12:00:00"
-        date "2023-10-03 12:00:00"
-        date "2023-10-04 12:00:00"
-        date "2023-10-05 12:00:00"
-        date "2023-10-06 12:00:00"
-        date "2023-10-07 12:00:00"
-        date "2023-10-08 12:00:00"
-        date "2023-10-09 12:00:00"
-        date "2023-10-10 12:00:00"
-         */
-    }
-
-    //验证文件管理策略
-    fun initLogger5() {
-        fun test5() {
-            Thread {
-                while (true) {
-                    Thread.sleep(10)
-                    LogUtils.v(TAG, "V 日志")
-                    LogUtils.d(TAG, "D 日志")
-                    LogUtils.i(TAG, "I 日志")
-                    LogUtils.w(TAG, "W 日志")
-                    LogUtils.w(TAG, "W 日志2", Exception("W 日志2"))
-                    LogUtils.e(TAG, "E 日志")
-                    LogUtils.e(TAG, "E 日志2", Exception("E 日志2"))
-                    LogUtils.e(TAG, Exception("E 日志3"))
-                }
-            }.start()
-        }
-        LogUtils.setLogger(
-            Logger.Builder()
-                .setLogcatPrinter(
-                    LogcatCustomPrinter(true, LogLevel.V, LogcatDefaultFormatStrategy())
-                ).setLogTxtPrinter(
-                    LogTxtCustomPrinter(
-                        true,
-                        LogLevel.V,
-                        LogTxtDefaultFormatStrategy(),
-                        FileLogDiskStrategyImpl()
-                    )
-                ).build()
-        )
-        test5()
-    }
-
-    //验证管理策略:FileAndTimeDiskStrategyImpl
-    fun initLogger6() {
-        fun test6() {
-            Thread {
-                while (true) {
-                    Thread.sleep(10)
-                    LogUtils.v(TAG, "V 日志")
-                    LogUtils.d(TAG, "D 日志")
-                    LogUtils.i(TAG, "I 日志")
-                    LogUtils.w(TAG, "W 日志")
-                    LogUtils.w(TAG, "W 日志2", Exception("W 日志2"))
-                    LogUtils.e(TAG, "E 日志")
-                    LogUtils.e(TAG, "E 日志2", Exception("E 日志2"))
-                    LogUtils.e(TAG, Exception("E 日志3"))
-                }
-            }.start()
-        }
-        Log.wtf(TAG,"这是WTF",Exception("异常了"))
-
-        LogUtils.setLogger(
-            Logger.Builder()
-                .setLogcatPrinter(
-                    LogcatCustomPrinter(true, LogLevel.V, LogcatDefaultFormatStrategy())
-                ).setLogTxtPrinter(
-                    LogTxtCustomPrinter(
-                        true,
-                        LogLevel.V,
-                        LogTxtDefaultFormatStrategy(),
-                        FileAndTimeDiskStrategyImpl()
-                    )
-                ).build()
-        )
-        test6()
-    }
-
-    //使用 PrettyFormatStrategy 格式输出日志
-    fun initLogger7() {
-        fun test7() {
-
-            try {
-                throw Exception("异常")
-            } catch (e: Exception) {
-                e.printStackTrace()
+            override fun getSegment(): BaseTimeLogDiskStrategy.LogTimeSegment {
+                return BaseTimeLogDiskStrategy.LogTimeSegment.ONE_HOUR //设置每次间隔一个小时创建一个日志文件
             }
-            LogUtils.v(TAG, "V 日志")
-            LogUtils.d(TAG, "D 日志")
-            LogUtils.i(TAG, "I 日志")
-            LogUtils.w(TAG, "W 日志")
-            LogUtils.w(TAG, "W 日志2", Exception("W 日志2"))
-            LogUtils.e(TAG, "E 日志")
-            LogUtils.e(TAG, "E 日志2", Exception("E 日志2"))
-            LogUtils.e(TAG, Exception("E 日志3"))
+
+            override fun getLogFileMaxSizeOfMB(): Long {
+                return 10  //设置每个日志文件最大是 10M ,超过10M自动创建下一个日志文件
+            }
 
         }
-        LogUtils.setLogger(
-            Logger.Builder()
-                .setLogcatPrinter(
-                    LogcatCustomPrinter(true, LogLevel.V, PrettyFormatStrategy())
-                ).build()
-        )
-        test7()
+
+        /*val timeDiskStrategyImpl = object :TimeLogDiskStrategyImpl(){
+            override fun getLogDir(): String {
+                return super.getLogDir()  //我的日志文件夹
+            }
+
+            override fun getSegment(): LogTimeSegment {
+                return BaseTimeLogDiskStrategy.LogTimeSegment.THREE_HOURS //设置每次间隔2个小时创建一个日志文件
+            }
+        }*/
+
+        /*val fileDiskStrategyImpl = object :FileLogDiskStrategyImpl(){
+            override fun getLogDir(): String {
+                return super.getLogDir()  //我的日志文件夹
+            }
+
+            override fun getLogFileMaxSizeOfMB(): Long {
+                return 10  //设置每个日志文件最大是 10M ,超过10M自动创建下一个日志文件
+            }
+
+            override fun getMinFreeStoreOfMB(): Long {
+                return 100  //设置系统必须至少还有100MB才能继续创建日志文件
+            }
+
+            override fun getLogDirMaxStoreOfMB(): Long {
+                return 200  //设置日志文件夹最多容纳多少MB的日志
+            }
+        }*/
+
+
+        val logger = Logger.Builder()
+            .setLogTxtPrinter(
+                LogTxtCustomPrinter(//设置默认的LogTxt Printer
+                    true, LogLevel.V, LogTxtDefaultFormatStrategy()
+                    , fileAndTimeDiskStrategyImpl
+                )
+            )
+            .build()
+        LogUtils.setLogger(logger)
+        LogUtils.v(TAG, "V 日志")
+        LogUtils.d(TAG, "D 日志")
+        LogUtils.i(TAG, "I 日志")
+        LogUtils.w(TAG, "W 日志")
+        LogUtils.e(TAG, "E 异常", Exception("这是一个异常"))
     }
 
-    //验证异常捕获
-    fun initLogger8(app: App){
-       LogUtils.setLogger(Logger.Builder().setCrashStrategy(DefaultCrashStrategyImpl(app)).build())
 
-        //Thread{
-            Thread.sleep(5000)
-            LogUtils.v(TAG, "V 日志")
-            LogUtils.d(TAG, "D 日志")
-            LogUtils.i(TAG, "I 日志")
-            LogUtils.w(TAG, "W 日志")
-            LogUtils.w(TAG, "W 日志2", Exception("W 日志2"))
-            LogUtils.e(TAG, "E 日志")
-            LogUtils.e(TAG, "E 日志2", Exception("E 日志2"))
-            LogUtils.e(TAG, Exception("E 日志3"))
-            var a =  1/0
-        //}.start()
+    fun initLoggerWithCrash(app: App){
+        val logger = Logger.Builder()
+            .setCrashStrategy(DefaultCrashStrategyImpl(app))  //配置异常捕获策略
+            .build()
+        LogUtils.setLogger(logger)
     }
-
-
-
-
 
 }

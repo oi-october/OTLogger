@@ -1,0 +1,31 @@
+apply plugin: 'maven-publish'
+
+
+//源文件
+task sourceJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+    archiveClassifier = "sources"
+}
+
+afterEvaluate {
+    publishing {
+        publications {
+            otLogger(MavenPublication) {
+                from components.release
+                artifact sourceJar   //发布源码
+                groupId 'com.october.otlogger'
+                artifactId 'otlogger'
+                version '1.0.0'
+            }
+        }
+
+        repositories {
+            //发布到本地
+            maven {
+                name "repo"
+                url "${rootDir}/repo"
+            }
+        }
+
+    }
+}
