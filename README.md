@@ -10,15 +10,18 @@
 在 root/build.gradle 中添加
 
 ```
-repositories {
-     maven { url 'https://jitpack.io' }
+allprojects {
+          repositories {
+		...
+		maven { url 'https://jitpack.io' }
+          }
 }
 ```
 
 在项目中添加依赖
 
 ```
-implementation ''
+implementation 'com.github.xieql-october:OTLogger:1.0.0'
 ```
 
 #### 使用 QLlogger
