@@ -1,4 +1,4 @@
-package com.xieql.lib.logger
+package com.otober.logger
 
 import org.junit.Test
 

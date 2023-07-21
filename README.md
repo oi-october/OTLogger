@@ -42,15 +42,15 @@ LogUtils.e(TAG, "E级别 日志")
 - 默认Logger 会把日志按与Log一致的格式输出到控制台和日志文件，并且日志文件仅仅保留7天，超过时间的日志文件自动删除。
 
 ```
-1970-01-01 08:42:37.224 6492-6492/com.xieql.logger V/TestLogger: V 日志
-1970-01-01 08:42:37.227 6492-6492/com.xieql.logger D/TestLogger: D 日志
-1970-01-01 08:42:37.227 6492-6492/com.xieql.logger I/TestLogger: I 日志
-1970-01-01 08:42:37.227 6492-6492/com.xieql.logger W/TestLogger: W 日志
-1970-01-01 08:42:37.228 6492-6492/com.xieql.logger E/TestLogger: E 异常  
+1970-01-01 08:42:37.224 6492-6492/com.october.logger V/TestLogger: V 日志
+1970-01-01 08:42:37.227 6492-6492/com.october.logger D/TestLogger: D 日志
+1970-01-01 08:42:37.227 6492-6492/com.october.logger I/TestLogger: I 日志
+1970-01-01 08:42:37.227 6492-6492/com.october.logger W/TestLogger: W 日志
+1970-01-01 08:42:37.228 6492-6492/com.october.logger E/TestLogger: E 异常  
       java.lang.Exception: 这是一个异常
-        at com.xieql.logger.TestLoggerHelper.userDefaultLogger(TestLoggerHelper.kt:32)
-        at com.xieql.logger.TestLoggerHelper.init(TestLoggerHelper.kt:24)
-        at com.xieql.logger.App.onCreate(App.kt:11)
+        at com.october.logger.TestLoggerHelper.userDefaultLogger(TestLoggerHelper.kt:32)
+        at com.october.logger.TestLoggerHelper.init(TestLoggerHelper.kt:24)
+        at com.october.logger.App.onCreate(App.kt:11)
         at android.app.Instrumentation.callApplicationOnCreate(Instrumentation.java:1119)
         at android.app.ActivityThread.handleBindApplication(ActivityThread.java:5740)
         at android.app.ActivityThread.-wrap1(Unknown Source:0)

@@ -5,7 +5,7 @@ plugins {
 apply from: 'maven.gradle'
 
 android {
-    namespace 'com.xieql.lib.logger'
+    namespace 'com.october.lib.logger'
     compileSdk 32
 
     defaultConfig {
