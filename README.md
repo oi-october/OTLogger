@@ -69,7 +69,7 @@ LogUtils.e(TAG, "E级别 日志")
 
 ## lib_logger 设计模型
 
-![设计模型](rmRes/ic_structure.png)
+<img name="默认Locat日志格式" src="rmRes/ic_structure.png" width=800 align="left"/>
 
 ## 高级功能
 
@@ -141,14 +141,17 @@ LogUtils.setLogger(logger)
 
 - LogcatDefaultFormatStrategy：默认Logcat 日志输出格式；
 
-  ![默认Locat日志格式](rmRes/ic_logcat_default_format.png)
+  <img name="默认Locat日志格式" src="rmRes/ic_logcat_default_format.png" width=600 align="left"/>
+
+  
 
 - LogTxtDefaultFormatStrategy:默认日志文件输出格式；
 
-  ![默认Locat日志格式](rmRes/ic_logtxt_default_format.png)
+- <img name="默认Locat日志格式" src="rmRes/ic_logtxt_default_format.png" width=600 align="left"/>
 
 - PrettyFormatStrategy : 漂亮的日志输出格式（仅仅合适Logcat , 不建议在日志文件中使用）
-- ![默认Locat日志格式](rmRes/ic_pretty_format.png)
+
+  <img name="默认Locat日志格式" src="rmRes/ic_pretty_format.png" width=600 align="left"/>
 
 ### 日志文件管理策略
 

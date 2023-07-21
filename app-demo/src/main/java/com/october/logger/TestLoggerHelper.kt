@@ -21,7 +21,7 @@ object TestLoggerHelper {
     private const val TAG = "TestLogger"
 
     fun init(app: App) {
-        //userDefaultLogger()
+        //userDefaultLogger(app)
         //initLoggerWithDefault()
         initLoggerWithPrettyFormat()
     }
