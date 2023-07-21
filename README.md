@@ -18,10 +18,10 @@ allprojects {
 }
 ```
 
-在项目中添加依赖
+在项目中添加依赖：release 见最新版本号
 
 ```
-implementation 'com.github.xieql-october:OTLogger:1.0.0'
+ implementation 'com.github.oi-october:OTLogger:release'
 ```
 
 #### 使用 QLlogger
@@ -47,7 +47,8 @@ LogUtils.e(TAG, "E级别 日志")
 
 ## lib_logger 设计模型
 
-<img name="默认Locat日志格式" src="rmRes/ic_structure.png" width=800 align="left"/>
+<img name="默认Locat日志格式" src="rmRes/ic_structure.png" width=800 style="float:left;"/>    
+<br/>
 
 ## 高级功能
 
@@ -119,17 +120,20 @@ LogUtils.setLogger(logger)
 
 - LogcatDefaultFormatStrategy：默认Logcat 日志输出格式；
 
-  <img name="默认Locat日志格式" src="rmRes/ic_logcat_default_format.png" width=600 align="left"/>
+ <img name="默认Locat日志格式" src="rmRes/ic_logcat_default_format.png" width=600 style="float:left;"/>
+  <br>
 
   
 
 - LogTxtDefaultFormatStrategy:默认日志文件输出格式；
 
-- <img name="默认Locat日志格式" src="rmRes/ic_logtxt_default_format.png" width=600 align="left"/>
+<img name="默认Locat日志格式" src="rmRes/ic_logtxt_default_format.png" width=600 style="float:left;"/>
+<br>
 
 - PrettyFormatStrategy : 漂亮的日志输出格式（仅仅合适Logcat , 不建议在日志文件中使用）
 
-  <img name="默认Locat日志格式" src="rmRes/ic_pretty_format.png" width=600 align="left"/>
+  <img name="默认Locat日志格式" src="rmRes/ic_pretty_format.png" width=600 style="float:left;"/>
+  <br>
 
 ### 日志文件管理策略
 
