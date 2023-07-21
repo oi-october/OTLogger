@@ -43,36 +43,11 @@ LogUtils.e(TAG, "E级别 日志")
 
 - 默认Logger 打印日志到 Logcat的同时会保存日志到 storage/emulated/0/Android/data/packageName/files/log 下；
 - 默认Logger 会把日志按与Log一致的格式输出到控制台和日志文件，并且日志文件仅仅保留7天，超过时间的日志文件自动删除。
-
-```
-1970-01-01 08:42:37.224 6492-6492/com.xieql.logger V/TestLogger: V 日志
-1970-01-01 08:42:37.227 6492-6492/com.xieql.logger D/TestLogger: D 日志
-1970-01-01 08:42:37.227 6492-6492/com.xieql.logger I/TestLogger: I 日志
-1970-01-01 08:42:37.227 6492-6492/com.xieql.logger W/TestLogger: W 日志
-1970-01-01 08:42:37.228 6492-6492/com.xieql.logger E/TestLogger: E 异常  
-      java.lang.Exception: 这是一个异常
-        at com.xieql.logger.TestLoggerHelper.userDefaultLogger(TestLoggerHelper.kt:32)
-        at com.xieql.logger.TestLoggerHelper.init(TestLoggerHelper.kt:24)
-        at com.xieql.logger.App.onCreate(App.kt:11)
-        at android.app.Instrumentation.callApplicationOnCreate(Instrumentation.java:1119)
-        at android.app.ActivityThread.handleBindApplication(ActivityThread.java:5740)
-        at android.app.ActivityThread.-wrap1(Unknown Source:0)
-        at android.app.ActivityThread$H.handleMessage(ActivityThread.java:1656)
-        at android.os.Handler.dispatchMessage(Handler.java:106)
-        at android.os.Looper.loop(Looper.java:164)
-        at android.app.ActivityThread.main(ActivityThread.java:6494)
-        at java.lang.reflect.Method.invoke(Native Method)
-        at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:438)
-        at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:807)
-```
-
 如果希望定制日志输出格式、日志输出级别、日志保存文件夹地址，见**高级功能**。
-
-
 
 ## lib_logger 设计模型
 
-![设计模型](rmRes/ic_structure.png)
+<img name="默认Locat日志格式" src="rmRes/ic_structure.png" width=800 align="left"/>
 
 ## 高级功能
 
@@ -144,14 +119,17 @@ LogUtils.setLogger(logger)
 
 - LogcatDefaultFormatStrategy：默认Logcat 日志输出格式；
 
-  ![默认Locat日志格式](rmRes/ic_logcat_default_format.png)
+  <img name="默认Locat日志格式" src="rmRes/ic_logcat_default_format.png" width=600 align="left"/>
+
+  
 
 - LogTxtDefaultFormatStrategy:默认日志文件输出格式；
 
-  ![默认Locat日志格式](rmRes/ic_logtxt_default_format.png)
+- <img name="默认Locat日志格式" src="rmRes/ic_logtxt_default_format.png" width=600 align="left"/>
 
 - PrettyFormatStrategy : 漂亮的日志输出格式（仅仅合适Logcat , 不建议在日志文件中使用）
-- ![默认Locat日志格式](rmRes/ic_pretty_format.png)
+
+  <img name="默认Locat日志格式" src="rmRes/ic_pretty_format.png" width=600 align="left"/>
 
 ### 日志文件管理策略
 
