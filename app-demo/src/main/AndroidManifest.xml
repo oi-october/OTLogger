@@ -5,7 +5,7 @@
     <profileable android:shell="true"/>
 
     <application
-        android:name=".App"
+        android:name="com.october.logger.App"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -16,7 +16,7 @@
         android:theme="@style/Theme.AndroidLogger"
         tools:targetApi="31">
         <activity
-            android:name=".MainActivity"
+            android:name="com.october.logger.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
