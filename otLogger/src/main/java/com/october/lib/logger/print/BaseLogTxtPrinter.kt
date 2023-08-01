@@ -71,8 +71,10 @@ open class WriteHandler(
     }
 
     open fun log(logLevel: LogLevel, logBody:String) {
-        val logFilePath =
-            logDiskStrategy.getLogPrintPath(logLevel, logBody, logBody.length.toLong())
+        val logFilePath = logDiskStrategy.internalGetLogPrintPath(logLevel, logBody, logBody.length.toLong())
+        if(logFilePath.isNullOrEmpty()){
+            return
+        }
         val logFile = File(logFilePath)
         val parentFile = logFile.parentFile
         try {

@@ -1,5 +1,6 @@
 package com.october.logger
 
+import android.os.Environment
 import com.october.lib.logger.LogLevel
 import com.october.lib.logger.LogUtils
 import com.october.lib.logger.Logger
@@ -15,15 +16,17 @@ import com.october.lib.logger.print.LogTxtCustomPrinter
 import com.october.lib.logger.print.LogTxtDefaultPrinter
 import com.october.lib.logger.print.LogcatCustomPrinter
 import com.october.lib.logger.print.LogcatDefaultPrinter
+import java.io.File
 
 object TestLoggerHelper {
 
     private const val TAG = "TestLogger"
 
     fun init(app: App) {
-        //userDefaultLogger(app)
+        userDefaultLogger(app)
         //initLoggerWithDefault()
-        initLoggerWithPrettyFormat()
+        //initLoggerWithPrettyFormat()
+        //initLoggerWithSdCardLogDir()
     }
 
     fun userDefaultLogger(app: App) {
@@ -172,5 +175,36 @@ object TestLoggerHelper {
             .build()
         LogUtils.setLogger(logger)
     }
+
+    /**
+     * 设置sdcard的文件路径作为日志文件存储路径
+     *  - 记得给权限
+     */
+     fun initLoggerWithSdCardLogDir(){
+        val fileAndTimeDiskStrategyImpl = object : FileAndTimeDiskStrategyImpl() {
+            override fun getLogDir(): String {
+                return Environment.getExternalStorageDirectory().absolutePath + File.separator+"myfile"+ File.separator +"log"
+            }
+        }
+
+        val logger = Logger.Builder()
+            .setLogTxtPrinter(
+                LogTxtCustomPrinter(//设置默认的LogTxt Printer
+                    true,
+                    LogLevel.V,
+                    LogTxtDefaultFormatStrategy(),
+                    fileAndTimeDiskStrategyImpl
+                )
+            )
+            .build()
+        LogUtils.setLogger(logger)
+        LogUtils.v(TAG, "V 日志")
+        LogUtils.d(TAG, "D 日志")
+        LogUtils.i(TAG, "I 日志")
+        LogUtils.w(TAG, "W 日志")
+        LogUtils.e(TAG, "E 异常", Exception("这是一个异常"))
+
+     }
+
 
 }

@@ -9,13 +9,14 @@ import java.io.File
 import java.io.FilenameFilter
 import java.text.SimpleDateFormat
 import java.util.Arrays
+import kotlin.math.log
 
 /**
  * 日志文件管理策略，按存储管理日志文件
  *   - 默认每个日志文件5MB，参考[getLogFileMaxSizeOfMB]
  *   - 默认日志文件夹最大可容纳 100M日志，超过[getLogDirMaxStoreOfMB]会按照时间顺序删除旧的日志，直到低于预定值
- *   - 默认文件名 log_年_月_日_时_分_秒.log
- *     eg: log_2023_02_12_16_28_56.log
+ *   - 默认文件名 otLog_年_月_日_时_分_秒.log
+ *     eg: otLog_2023_02_12_16_28_56.log
  *
  *
  * 什么时候创建新的日志文件？
@@ -25,11 +26,6 @@ import java.util.Arrays
  *
  */
 open class FileLogDiskStrategyImpl :BaseFileLogDiskStrategy(){
-
-    private companion object{
-        const val LogPrefix = "log_"
-        const val LogSuffix = ".log"
-    }
 
     //日志文件名时间格式
     private val logFileNameDateFormat = SimpleDateFormat("yyyy_MM_dd_HH_mm_ss")
@@ -52,7 +48,7 @@ open class FileLogDiskStrategyImpl :BaseFileLogDiskStrategy(){
 
     //最少空闲空间 , 单位B
     internal val defaultMinFreeStoreOfMB by lazy {
-        val total = getTotalStore()
+        val total = getTotalStore(getLogDir())
         if(total>2*1024*1024*1024){
             debugLog("总存储 >2GB，至少遗留存储空间:${500} MB")
             return@lazy 500
@@ -180,7 +176,7 @@ open class FileLogDiskStrategyImpl :BaseFileLogDiskStrategy(){
     open fun getLogHeardInfo():String{
          val builder = StringBuilder()
         builder.append(LOG_HEARD_INFO)
-        builder.append("总存储:${getTotalStore()}")
+        builder.append("总存储:${getTotalStore(getLogDir())}")
         builder.append("空闲存储:${getFreeStore(getLogDir())}")
         builder.append("\n\n")
         return builder.toString()
@@ -190,8 +186,8 @@ open class FileLogDiskStrategyImpl :BaseFileLogDiskStrategy(){
      * 获取文件名称
      * @param logTime 日志打印时间
      * @return 该日志对应的文件名 ，输出文件名格式：log_xxxx_xx_xx_currentHour_timestamp.log
-     *   2023年11月20日，11：20分55秒 输出的日志对应的日志名称：log_yyyy_MM_dd_HH_mm_ss.log
-     *   log_2023_11_20_11_20_55.log
+     *   2023年11月20日，11：20分55秒 输出的日志对应的日志名称：otLog_yyyy_MM_dd_HH_mm_ss.log
+     *   otLog_2023_11_20_11_20_55.log
      *
      */
     protected open fun getFileName(logTime: Long): String {
@@ -225,9 +221,6 @@ open class FileLogDiskStrategyImpl :BaseFileLogDiskStrategy(){
  */
 public abstract class BaseFileLogDiskStrategy:BaseLogDiskStrategy(){
 
-    //文件存储路径
-    abstract fun getLogDir():String
-
     /**
      * 设置每个日志文件最大空间大小 单位：MB
      * @return
@@ -254,8 +247,8 @@ public abstract class BaseFileLogDiskStrategy:BaseLogDiskStrategy(){
      * 获取全部存储空间
      *  单位B
      */
-    open fun getTotalStore():Long{
-        val sf = StatFs(getLogDir())
+    open fun getTotalStore(logDir:String):Long{
+        val sf = StatFs(logDir)
         val blockSize = sf.blockSizeLong
         val blockCount = sf.blockCountLong
         val size = blockSize * blockCount
