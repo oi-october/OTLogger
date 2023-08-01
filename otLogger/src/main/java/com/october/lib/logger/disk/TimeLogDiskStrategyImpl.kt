@@ -15,14 +15,9 @@ import java.util.*
  * - 默认按照小时创建日志文件
  * - 默认每个日志文件保存七天
  * - 默认文件名 log_年_月_日_时间段.log
- *     eg：log_2023_02_12_15_16.log ，这里的 15_16 表示该文件储存 15点到 16点的日志
+ *     eg：otLog_2023_02_12_15_16.log ，这里的 15_16 表示该文件储存 15点到 16点的日志
  */
 open class TimeLogDiskStrategyImpl : BaseTimeLogDiskStrategy() {
-
-    private companion object {
-        const val LogPrefix = "log_"
-        const val LogSuffix = ".log"
-    }
 
     //日志文件名时间格式
     private val logFileNameDateFormat = SimpleDateFormat("yyyy_MM_dd")
@@ -162,7 +157,7 @@ open class TimeLogDiskStrategyImpl : BaseTimeLogDiskStrategy() {
      * @param section 时间戳对应当前的开始小时和结束小时，[startHour，endHour],eg：[13,14]
      * @return 该日志对应的文件名 ，输出文件名格式：log_xxxx_xx_xx_startHour_endHour.log
      *   比如按照日志片段(LogTimeSegment)是一个小时计算， 2023年11月20日，11：20分输出的日志对应的日志名称：
-     *   log_2023_11_20_11_12.log
+     *   otLog_2023_11_20_11_12.log
      */
     open fun getFileName(logTime: Long, section: Point): String {
         val logTimeStr = logFileNameDateFormat.format(logTime)
@@ -190,18 +185,12 @@ open class TimeLogDiskStrategyImpl : BaseTimeLogDiskStrategy() {
     }
 
 
-
-
 }
 
 /**
  * 按照时间管理日志策略基类，定义了可定制参数
  */
 public abstract class BaseTimeLogDiskStrategy : BaseLogDiskStrategy() {
-    /**
-     * 获取日志文件夹
-     */
-    abstract fun getLogDir(): String
 
     /**
      * 日志保持天数，单位：天

@@ -11,7 +11,7 @@ import java.text.SimpleDateFormat
  * 文件+时间管理策略，同时具备[FileLogDiskStrategyImpl] 和 [TimeLogDiskStrategyImpl] 的特性
  *   - 默认日志文件夹最大可容纳 100M日志，超过[getLogDirMaxStoreOfMB]会按照时间顺序删除旧的日志，直到低于预定值
  *   - 默认文件名 默认文件名 log_年_月_日_时间段_创建时间戳.log
- *     eg: log_2023_02_12_16_17_1233644846.log
+ *     eg: otLog_2023_02_12_16_17_1233644846.log
  *
  * 什么时候创建新的日志文件？
  *   - 每个日志写满了会创建一个新的日志文件
@@ -19,11 +19,6 @@ import java.text.SimpleDateFormat
  *   - 为了保护系统，以上都要当系统可用空闲空间大于最低限制的空闲空间[getMinFreeStoreOfMB]时，才会创建新的日志文件。
  */
 open class FileAndTimeDiskStrategyImpl : BaseLogDiskStrategy() {
-
-    private companion object {
-        const val LogPrefix = "log_"
-        const val LogSuffix = ".log"
-    }
 
     private val defaultFileSize =  5L   //默认文件大小
     private val defaultLogDirSize = 20L //默认日志文件夹大小
@@ -53,7 +48,7 @@ open class FileAndTimeDiskStrategyImpl : BaseLogDiskStrategy() {
             //检查空闲空间
             if(getMinFreeStoreOfMB() > 0 ){
                 val freeStore = fileLogDiskStrategy.getFreeStore(getLogDir())
-                debugLog("当前空闲空间:${freeStore/1024}KB，最低空闲空间:${getMinFreeStoreOfMB()*1024}KB")
+                debugLog("current free store size = ${freeStore/1024}KB，  minimum free space:${getMinFreeStoreOfMB()*1024}KB")
                 if(freeStore < getMinFreeStoreOfMB() * 1024 *1024){
                     return ""
                 }
@@ -83,7 +78,7 @@ open class FileAndTimeDiskStrategyImpl : BaseLogDiskStrategy() {
     }
 
     //获取日志文件夹路径
-    open fun getLogDir(): String {
+    override fun getLogDir(): String {
         return fileLogDiskStrategy.defaultLogDir
     }
     //设置每个日志文件最大空间大小 单位：MB
@@ -108,9 +103,9 @@ open class FileAndTimeDiskStrategyImpl : BaseLogDiskStrategy() {
      * 获取文件名称
      * @param logTime 日志打印时间
      * @param section 时间戳对应当前的开始小时和结束小时，[startHour，endHour],eg：[13,14]
-     * @return 该日志对应的文件名 ，输出文件名格式：log_xxxx_xx_xx_startHour_endHour_timestamp.log
+     * @return 该日志对应的文件名 ，输出文件名格式：otLog_xxxx_xx_xx_startHour_endHour_timestamp.log
      *   比如按照日志片段(LogTimeSegment)是一个小时计算， 2023年11月20日，11：20分输出的日志对应的日志名称：
-     *   log_2023_11_20_11_12_12345677.log
+     *   otLog_2023_11_20_11_12_12345677.log
      */
     open fun getFileName(logTime: Long, section: Point): String {
         val logTimeStr = logFileNameDateFormat.format(logTime)
@@ -128,7 +123,7 @@ open class FileAndTimeDiskStrategyImpl : BaseLogDiskStrategy() {
     open fun getLogHeardInfo():String{
         val builder = StringBuilder()
         builder.append(LOG_HEARD_INFO)
-        builder.append("总存储:${fileLogDiskStrategy.getTotalStore()}")
+        builder.append("总存储:${fileLogDiskStrategy.getTotalStore(getLogDir())}")
         builder.append("空闲存储:${fileLogDiskStrategy.getFreeStore(getLogDir())}")
         builder.append("\n\n")
         return builder.toString()

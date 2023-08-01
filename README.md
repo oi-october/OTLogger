@@ -21,6 +21,7 @@ allprojects {
 在项目中添加依赖：release 见最新版本号
 
 ```
+ //eg:implementation 'com.github.oi-october:OTLogger:1.0.2'
  implementation 'com.github.oi-october:OTLogger:release'
 ```
 
