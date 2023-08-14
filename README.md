@@ -48,7 +48,7 @@ LogUtils.e(TAG, "E级别 日志")
 
 ## lib_logger 设计模型
 
-<img name="默认Locat日志格式" src="rmRes/ic_structure.png" width=800 style="float:left;"/>    
+<img name="默认Locat日志格式" src="rmRes/ic_structure2.jpg" width=1000 style="float:left;"/>    
 <br/>
 
 ## 高级功能
