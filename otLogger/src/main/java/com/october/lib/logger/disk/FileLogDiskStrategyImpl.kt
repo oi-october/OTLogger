@@ -1,15 +1,14 @@
 package com.october.lib.logger.disk
 
-import android.os.StatFs
 import com.october.lib.logger.LogLevel
 import com.october.lib.logger.common.LOG_HEARD_INFO
-import com.october.lib.logger.util.appCtx
+import com.october.lib.logger.common.getFreeStore
+import com.october.lib.logger.common.getTotalStore
 import com.october.lib.logger.util.debugLog
+import com.october.lib.logger.util.errorLog
 import java.io.File
 import java.io.FilenameFilter
 import java.text.SimpleDateFormat
-import java.util.Arrays
-import kotlin.math.log
 
 /**
  * 日志文件管理策略，按存储管理日志文件
@@ -21,165 +20,137 @@ import kotlin.math.log
  *
  * 什么时候创建新的日志文件？
  *   - 每个日志写满了会创建一个新的日志文件
- *   - 内存中的日志对象[currentLogFilePath]为null，也会创建一个新的文件，而不是复用上一个未写满的日志文件
  *   - 为了保护系统，以上都要当系统可用空闲空间大于最低限制的空闲空间[getMinFreeStoreOfMB]时，才会创建新的日志文件。
  *
+ * @param logDirectory 日志文件夹
+ * @param minFreeStoreOfMB 最小空闲空间（单位MB），当系统最小空闲存储空间低于该值时，不再创建新的日志文件
+ * @param logDirectoryMaxStoreSizeOfMB 日志文件夹最大的存储容量（单位MB），所有的日志文件加起来的大小不得操过该值
+ * @param logFileStoreSizeOfMB 每个日志文件容量（单位MB），只有上一个日志文件操过容量，才会创建下一个日志文件
  */
-open class FileLogDiskStrategyImpl :BaseFileLogDiskStrategy(){
+open class FileLogDiskStrategyImpl(
+    val logDirectory: String = defaultLogDir,
+    val minFreeStoreOfMB: Int = 200,
+    val logDirectoryMaxStoreSizeOfMB: Int = 100,
+    val logFileStoreSizeOfMB:Int = 5
+) : BaseLogDiskStrategy() {
+
 
     //日志文件名时间格式
     private val logFileNameDateFormat = SimpleDateFormat("yyyy_MM_dd_HH_mm_ss")
-
-    private var currentLogFilePath:FilePath? = null
-
-    private val defaultFileSize =  5L   //默认文件大小
-    private val defaultLogDirSize = 100L //默认日志文件夹大小
-
-    //默认存储地址
-    internal val defaultLogDir by lazy {
-        val path = appCtx.getExternalFilesDir("")?.absolutePath+ File.separator+"log"
-        val file = File(path)
-        if(!file.exists()|| !file.isDirectory){
-            file.mkdirs()
-        }
-        debugLog("日志存储路径:${file.absolutePath}")
-        return@lazy file.absolutePath
-    }
-
-    //最少空闲空间 , 单位B
-    internal val defaultMinFreeStoreOfMB by lazy {
-        val total = getTotalStore(getLogDir())
-        if(total>2*1024*1024*1024){
-            debugLog("总存储 >2GB，至少遗留存储空间:${500} MB")
-            return@lazy 500
-        }else{
-            val atLeast = total/1024/1024/4L  //取 1/4
-            debugLog("总存储 < 2GB，至少遗留存储空间:${atLeast} MB")
-            return@lazy atLeast
-        }
-    }
-
-    override fun getLogPrintPath(logLevel: LogLevel, logBody: String?, bodySize: Long): String? {
-        val currentTime = System.currentTimeMillis()
-        val logFilePath = currentLogFilePath
-        if(logFilePath !=null && logFilePath.isMatch()){
-            return logFilePath.filePath
-        }else{
-            val fileName = getFileName(currentTime)
-            val path = getLogDir()+File.separator+fileName  //文件路径
-            val filePath = FilePath(getLogFileMaxSizeOfMB()*1024*1024,path)
-
-            if(!checkAndClearLogDir(getLogDirMaxStoreOfMB() * 1024 *1024)){
-                return ""
-            }
-            //检查空闲空间
-            if(getMinFreeStoreOfMB() > 0 ){
-                val freeStore = getFreeStore(getLogDir())
-                debugLog("当前空闲空间:${freeStore/1024}KB，最低空闲空间:${getMinFreeStoreOfMB()*1024}KB")
-                if(freeStore < getMinFreeStoreOfMB() * 1024 *1024){
-                    return ""
-                }
-            }
-            val file = File(filePath.filePath)
-            if(!file.parentFile.exists()){
-                file.parentFile.mkdirs()  //创建文件夹
-            }
-            if (!file.exists() || !file.isFile) {  //创建新文件 并 添加文件头部内容
-                if(file.createNewFile()){
-                    file.appendText(getLogHeardInfo())  //写入文件头
-                }
-            }
-
-            currentLogFilePath = filePath
-
-            return filePath.filePath
-
-        }
-        return ""
-    }
-
-    override fun getCurrentLogFilePath(): String? {
-        return currentLogFilePath?.filePath
-    }
+    private var currentFilePathCache: FilePathCache? = null
 
     //获取日志文件夹路径
-    override fun getLogDir():String{
-        return defaultLogDir
+    override fun getLogDir(): String {
+        return logDirectory
     }
 
-    override fun getLogFileMaxSizeOfMB(): Long {
-        return defaultFileSize
+    override fun createLogFile(printTime: Long, logLevel: LogLevel, logBody: String?): String? {
+        //复用之前的尚未写满的日志文件
+        val fileArray = File(getLogDir()).listFiles(FilenameFilter { _, name ->
+            return@FilenameFilter(name.startsWith(LogPrefix) && name.endsWith(LogSuffix))
+        })
+        var fileName = ""
+        if(!fileArray.isNullOrEmpty()){
+            var fileList = fileArray.sortedBy {
+                it.name
+            }
+            val lastFile = fileList.last()
+            if(lastFile.length() < logFileStoreSizeOfMB *1024*1024){
+                fileName = lastFile.name
+            }
+        }
+        //创建新的日志文件
+        if(fileName.isNullOrEmpty()){
+            fileName = getFileName(printTime)
+        }
+        debugLog("create log file=${fileName}")
+        val path = getLogDir() + File.separator + fileName  //文件路径
+        val filePath = FilePathCache(logFileStoreSizeOfMB * 1024 * 1024L, path)
+        currentFilePathCache = filePath
+        return filePath.filePath
     }
 
-    override fun getMinFreeStoreOfMB(): Long {
-        return defaultMinFreeStoreOfMB
+    override fun isLogFilePathAvailable(
+        logFilepath: String?,
+        printTime: Long,
+        logLevel: LogLevel,
+        logBody: String?
+    ): Boolean {
+        return currentFilePathCache?.isMatch(logFilepath) == true
     }
 
-    override fun getLogDirMaxStoreOfMB(): Long {
-        return defaultLogDirSize
+    override fun isAllowCreateLogFile(printTime: Long): Boolean {
+        checkAndClearLogDir()
+        //检查空闲空间
+        if (minFreeStoreOfMB > 0) {
+            val freeStore = getFreeStore(getLogDir())
+            debugLog("free store size=${freeStore / 1024f / 1024f}MB，min free store size=${minFreeStoreOfMB * 1024f / 1024f}MB")
+            if (freeStore < minFreeStoreOfMB * 1024 * 1024) {
+                return false
+            }
+        }
+        return true
     }
+
+    override fun logHeadInfo(): String? {
+        val builder = StringBuilder()
+        builder.append(LOG_HEARD_INFO)
+        builder.append("all store size =${getTotalStore(getLogDir())/1024f/1024f}MB")
+        builder.append("free store size = ${getFreeStore(getLogDir())/1024f/1024f}MB")
+        builder.append("\n\n")
+        return builder.toString()
+    }
+
 
     /**
      * 检查并清理日志文件夹，如果文件夹超过[logDirMaxStore]，会删除旧的文件，直到低于[logDirMaxStore]
-     * @return
-     *  是否处理成功
      */
-    open fun checkAndClearLogDir(logDirMaxStore:Long):Boolean{
-        val logDirFile =  File(getLogDir())
-        if(!logDirFile.exists() || !logDirFile.isDirectory) return true
+    internal fun checkAndClearLogDir() {
+        val logDirFile = File(getLogDir())
+        // log dir exist？ read and write permission?
+        if (!logDirFile.exists() || !logDirFile.isDirectory || !logDirFile.canRead() || !logDirFile.canWrite()) {
+            errorLog(" log dir exist？ read and write permission?")
+            return
+        }
         val logFileArray = logDirFile.listFiles(FilenameFilter { _, name ->
             val name = name.trim()
-            if(name.startsWith(LogPrefix) && name.endsWith(LogSuffix)){
+            if (name.startsWith(LogPrefix) && name.endsWith(LogSuffix)) {
                 return@FilenameFilter true
             }
             return@FilenameFilter false
         })
-        var logList =  logFileArray.asList()
-        if(logList.isNullOrEmpty()) return true
+        var logList = logFileArray.asList()
+        if (logList.isNullOrEmpty()) {
+            //no log file
+            return
+        }
         logList = logList.sortedBy {
             it.name
         }
-
-        /*debugLog("排序-------------")
-        logList.forEach {
-            debugLog("文件：${it.name}")
-        }*/
-
         var size = 0L
-        var startDelete = false
-        for (i in logList.size-1 downTo  0){
+        var outSizeIndex = -1
+        val logDirMaxStore = logDirectoryMaxStoreSizeOfMB * 1024 * 1024
+        for (i in logList.size - 1 downTo 0) {
             val logFile = logList.get(i)
-
-            if(startDelete){  //删除后续日志文件，把后续的文件全部删除了
-                debugLog("删除超出容量文件:${logFile.name}")
-                logFile.delete()
-                continue
-            }
-            debugLog("name ===== ${i},${logFile.length()}")
-            size += logFile.length()
-            if(size > logDirMaxStore){ //超过了最大容量，当前和后面的日志文件都会被删除
-                startDelete =  true
-                debugLog("删除超出容量文件:${logFile.name}")
-                logFile.delete()  //删除当前
+            val length = logFile.length()
+            size += length
+            debugLog("file(${logFile.name}).size=${length/1024f/1024f}MB，size=${size/1024f/1024f}MB，maxSize=${logDirectoryMaxStoreSizeOfMB}MB")
+            if (size > logDirMaxStore) { //超过了最大容量，当前和后面的日志文件都会被删除
+                outSizeIndex = i
+                break
             }
         }
 
-        debugLog("清理完成后日志文件总大小：${size/1024/1024}MB")
-
-        return true
-    }
-
-    /**
-     * 获取文件头部信息，创建新文件的时候写入
-     * @return
-     */
-    open fun getLogHeardInfo():String{
-         val builder = StringBuilder()
-        builder.append(LOG_HEARD_INFO)
-        builder.append("总存储:${getTotalStore(getLogDir())}")
-        builder.append("空闲存储:${getFreeStore(getLogDir())}")
-        builder.append("\n\n")
-        return builder.toString()
+        if (outSizeIndex < 0) {
+            // no log file need delete
+            return
+        }
+        for (j in 0 until outSizeIndex + 1) {
+            val logFile = logList.get(j)
+            val isSuccess = logFile.delete()
+            debugLog("delete log file(${logFile.name}) success? ${isSuccess}")
+        }
+        debugLog("after clear invalid log file，log dir size=${size / 1024f / 1024f}MB")
     }
 
     /**
@@ -190,84 +161,41 @@ open class FileLogDiskStrategyImpl :BaseFileLogDiskStrategy(){
      *   otLog_2023_11_20_11_20_55.log
      *
      */
-    protected open fun getFileName(logTime: Long): String {
+    private fun getFileName(logTime: Long): String {
         val logTimeStr = logFileNameDateFormat.format(logTime)
         return "${LogPrefix}${logTimeStr}${LogSuffix}"
     }
 
-    private class FilePath(val logFileMaxSize:Long,val filePath:String) {
-        private val MaxResetCount = 100
+    private class FilePathCache(val logFileMaxSize: Long, val filePath: String) {
+        private val MAX_RESET_COUNT = 50
         private var curResetCount = 0
         private var currentSize = -1L
 
-        private val logFile by lazy { File(filePath) }
+        private val logFile by lazy {
+            File(filePath)
+        }
 
-        fun  isMatch():Boolean{
-            if(curResetCount > MaxResetCount || currentSize<0){  //检查100次，查一次文件大小
+        init {
+            if(logFile.exists() && logFile.isFile){
+                currentSize = logFile.length()
+            }else{
+                currentSize = 0
+            }
+        }
+
+        fun isMatch(logFilePath: String?): Boolean {
+            if (curResetCount > MAX_RESET_COUNT || currentSize < 0) {  //每50次，查一次文件大小
                 curResetCount = 0
                 currentSize = logFile.length()
             }
-            curResetCount ++
+            curResetCount++
             //当前文件大小 < 最大限制大小， 表示匹配
-            return currentSize < logFileMaxSize
+            return currentSize < logFileMaxSize && filePath == logFilePath
         }
+
+
+
     }
+
 
 }
-
-/**
- * 日志文件管理策略基类
- * 定义了可配置参数
- */
-public abstract class BaseFileLogDiskStrategy:BaseLogDiskStrategy(){
-
-    /**
-     * 设置每个日志文件最大空间大小 单位：MB
-     * @return
-     */
-    abstract fun getLogFileMaxSizeOfMB():Long
-
-    /**
-     * 设置最小空闲存储空间 单位：MB
-     * - 创建新文件时候， 必须满足 [系统空闲存储 > 最小空闲存储空间] 的时候，才能创建新的日志文件
-     * @return
-     * - 最小空闲存储空间 <= 0 : 表示不使用该参数作为创建日志文件的限制
-     */
-    abstract fun getMinFreeStoreOfMB():Long
-
-    /**
-     * 设置日志文件夹最大容量 :单位MB
-     * - 只有日志文件夹中，[所有的日志文件大小之和 < 日志文件夹最大容量] 的时候，才能创建新的日志文件.
-     * - [所有的日志文件大小之和 >= 日志文件夹最大容量]的时候，会触发回删操作
-     * @return
-     */
-    abstract fun getLogDirMaxStoreOfMB():Long
-
-    /**
-     * 获取全部存储空间
-     *  单位B
-     */
-    open fun getTotalStore(logDir:String):Long{
-        val sf = StatFs(logDir)
-        val blockSize = sf.blockSizeLong
-        val blockCount = sf.blockCountLong
-        val size = blockSize * blockCount
-        debugLog("block大小:$blockSize,block数目: $blockCount , 总大小: ${size/1024}KB")
-        return size
-    }
-    /**
-     * 获取空余存储空间
-     *  单位B
-     */
-    open fun getFreeStore(logDir:String):Long{
-        val sf = StatFs(logDir)
-        val blockSize = sf.availableBlocksLong
-        val blockCount = sf.blockCountLong
-        val size = blockSize * blockCount
-        debugLog("block大小:$blockSize,block数目: $blockCount , 总大小: ${size/1024}KB")
-        return size
-    }
-
-}
-
-

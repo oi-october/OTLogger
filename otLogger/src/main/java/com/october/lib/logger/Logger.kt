@@ -4,7 +4,6 @@ import com.october.lib.logger.crash.BaseCrashStrategy
 import com.october.lib.logger.print.BaseLogTxtPrinter
 import com.october.lib.logger.print.BaseLogcatPrinter
 import com.october.lib.logger.print.LogcatDefaultPrinter
-import com.october.lib.logger.print.LogTxtDefaultPrinter
 
 
 /**
@@ -42,7 +41,7 @@ open class Logger {
         //控制台打印器
         internal var logcatPrinter:BaseLogcatPrinter? = LogcatDefaultPrinter()
         //日志文件打印机
-        internal var logTxtPrinter:BaseLogTxtPrinter? = LogTxtDefaultPrinter()
+        internal var logTxtPrinter:BaseLogTxtPrinter? = null
 
         internal var crashStrategy:BaseCrashStrategy? = null
 

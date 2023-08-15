@@ -71,7 +71,7 @@ open class WriteHandler(
     }
 
     open fun log(logLevel: LogLevel, logBody:String) {
-        val logFilePath = logDiskStrategy.internalGetLogPrintPath(logLevel, logBody, logBody.length.toLong())
+        val logFilePath = logDiskStrategy.internalGetLogPrintPath(System.currentTimeMillis(),logLevel, logBody, logBody.length.toLong())
         if(logFilePath.isNullOrEmpty()){
             return
         }
