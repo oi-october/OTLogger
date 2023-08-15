@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="center_horizontal"
+    tools:context="com.october.logger.TestLogcatActivity">
+
+    <TextView android:id="@+id/title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Test Logcat Format"
+        android:gravity="center"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="20dp"/>
+
+    <Button android:id="@+id/default_logcat_format"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Default Logger"/>
+    <Button android:id="@+id/pretty_logcat_format"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Logcat Pretty Format"/>
+
+    <Button android:id="@+id/print_log"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:layout_gravity="center_horizontal"
+        android:text="Print Log"/>
+
+</LinearLayout>
