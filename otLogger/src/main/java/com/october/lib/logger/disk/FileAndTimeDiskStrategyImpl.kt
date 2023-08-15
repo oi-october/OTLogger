@@ -19,6 +19,13 @@ import java.text.SimpleDateFormat
  *   - 每个日志写满了会创建一个新的日志文件
  *   - 超过日志时间片段，会创建一个新的日志文件进行存储
  *   - 为了保护系统，以上都要当系统可用空闲空间大于最低限制的空闲空间[minFreeStoreOfMB]时，才会创建新的日志文件。
+ *
+ * @param logDirectory 日志文件夹
+ * @param minFreeStoreOfMB 最小空闲空间（单位MB），当系统最小空闲存储空间低于该值时，不再创建新的日志文件
+ * @param logDirectoryMaxStoreSizeOfMB 日志文件夹最大的存储容量（单位MB），所有的日志文件加起来的大小不得操过该值
+ * @param logFileStoreSizeOfMB 每个日志文件容量（单位MB），只有上一个日志文件操过容量，才会创建下一个日志文件
+ * @param segment 创建日志文件间隔，默认每个小时创建一份新的日志文件
+ *
  */
 open class FileAndTimeDiskStrategyImpl(
     val logDirectory: String = defaultLogDir,
