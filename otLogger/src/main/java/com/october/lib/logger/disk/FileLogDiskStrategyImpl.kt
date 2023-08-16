@@ -12,15 +12,15 @@ import java.text.SimpleDateFormat
 
 /**
  * 日志文件管理策略，按存储管理日志文件
- *   - 默认每个日志文件5MB，参考[getLogFileMaxSizeOfMB]
- *   - 默认日志文件夹最大可容纳 100M日志，超过[getLogDirMaxStoreOfMB]会按照时间顺序删除旧的日志，直到低于预定值
+ *   - 默认每个日志文件5MB，参考[logFileStoreSizeOfMB]
+ *   - 默认日志文件夹最大可容纳 100M日志，超过[logDirectoryMaxStoreSizeOfMB]会按照时间顺序删除旧的日志，直到低于预定值
  *   - 默认文件名 otLog_年_月_日_时_分_秒.log
  *     eg: otLog_2023_02_12_16_28_56.log
  *
  *
  * 什么时候创建新的日志文件？
  *   - 每个日志写满了会创建一个新的日志文件
- *   - 为了保护系统，以上都要当系统可用空闲空间大于最低限制的空闲空间[getMinFreeStoreOfMB]时，才会创建新的日志文件。
+ *   - 为了保护系统，以上都要当系统可用空闲空间大于最低限制的空闲空间[minFreeStoreOfMB]时，才会创建新的日志文件。
  *
  * @param logDirectory 日志文件夹
  * @param minFreeStoreOfMB 最小空闲空间（单位MB），当系统最小空闲存储空间低于该值时，不再创建新的日志文件
@@ -45,26 +45,34 @@ open class FileLogDiskStrategyImpl(
     }
 
     override fun createLogFile(printTime: Long, logLevel: LogLevel, logBody: String?): String? {
-        //复用之前的尚未写满的日志文件
-        val fileArray = File(getLogDir()).listFiles(FilenameFilter { _, name ->
-            return@FilenameFilter(name.startsWith(LogPrefix) && name.endsWith(LogSuffix))
-        })
         var fileName = ""
-        if(!fileArray.isNullOrEmpty()){
-            var fileList = fileArray.sortedBy {
-                it.name
-            }
-            val lastFile = fileList.last()
-            if(lastFile.length() < logFileStoreSizeOfMB *1024*1024){
-                fileName = lastFile.name
-            }
-        }
-        //创建新的日志文件
-        if(fileName.isNullOrEmpty()){
+        val currentLogFileCacheSize = currentFilePathCache?.getCurrentSize()
+        if (currentLogFileCacheSize != null && currentLogFileCacheSize > logFileStoreSizeOfMB * 1024 * 1024) {
+            //last log file is full
             fileName = getFileName(printTime)
+        } else {
+            //find last log file
+            val fileArray = File(getLogDir()).listFiles(FilenameFilter { _, name ->
+                return@FilenameFilter(name.startsWith(LogPrefix) && name.endsWith(LogSuffix))
+            })
+
+            if(!fileArray.isNullOrEmpty()){
+                var fileList = fileArray.sortedBy {
+                    it.name
+                }
+                val lastFile = fileList.last()
+                if(lastFile.length() < logFileStoreSizeOfMB *1024*1024){
+                    fileName = lastFile.name
+                }
+            }
+            //创建新的日志文件
+            if(fileName.isNullOrEmpty()){
+                fileName = getFileName(printTime)
+            }
         }
-        debugLog("create log file=${fileName}")
+
         val path = getLogDir() + File.separator + fileName  //文件路径
+        debugLog("create log file=${path}")
         val filePath = FilePathCache(logFileStoreSizeOfMB * 1024 * 1024L, path)
         currentFilePathCache = filePath
         return filePath.filePath
@@ -193,6 +201,9 @@ open class FileLogDiskStrategyImpl(
             return currentSize < logFileMaxSize && filePath == logFilePath
         }
 
+        fun getCurrentSize(): Long {
+            return currentSize
+        }
 
 
     }
