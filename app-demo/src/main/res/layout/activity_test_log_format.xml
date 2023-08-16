@@ -6,25 +6,33 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_gravity="center_horizontal"
-    tools:context="com.october.logger.TestLogcatActivity">
+    tools:context="com.october.logger.TestLogFormatActivity">
 
     <TextView android:id="@+id/title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Test Logcat Format"
+        android:text="Test Log Format"
         android:gravity="center"
         android:textSize="20sp"
         android:textStyle="bold"
         android:layout_marginBottom="20dp"/>
 
-    <Button android:id="@+id/default_logcat_format"
+    <RadioGroup android:id="@+id/format_group"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Default Logger"/>
-    <Button android:id="@+id/pretty_logcat_format"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Logcat Pretty Format"/>
+        android:orientation="horizontal">
+        <RadioButton android:id="@+id/btn_default_format"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:text="Default Format"
+            android:layout_weight="1"/>
+        <RadioButton android:id="@+id/btn_pretty_format"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Pretty Format"
+            android:layout_weight="1"/>
+    </RadioGroup>
 
     <Button android:id="@+id/print_log"
         android:layout_width="match_parent"

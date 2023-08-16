@@ -11,6 +11,9 @@ import com.october.lib.logger.disk.FileAndTimeDiskStrategyImpl
 import com.october.lib.logger.print.LogTxtDefaultPrinter
 import com.october.lib.logger.print.LogcatDefaultPrinter
 
+/**
+ * 测试推荐配置
+ */
 class TestSuggestLogcatActivity :AppCompatActivity(){
 
     companion object{

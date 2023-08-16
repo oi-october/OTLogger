@@ -2,6 +2,7 @@ package com.october.logger
 
 import android.os.Bundle
 import android.widget.Button
+import android.widget.RadioGroup
 import androidx.appcompat.app.AppCompatActivity
 import com.october.lib.logger.LogUtils
 import com.october.lib.logger.Logger
@@ -9,10 +10,13 @@ import com.october.lib.logger.disk.FileAndTimeDiskStrategyImpl
 import com.october.lib.logger.disk.FileLogDiskStrategyImpl
 import com.october.lib.logger.disk.TimeLogDiskStrategyImpl
 import com.october.lib.logger.format.LogTxtDefaultFormatStrategy
+import com.october.lib.logger.format.LogTxtPrettyFormatStrategy
 import com.october.lib.logger.print.LogTxtDefaultPrinter
-import kotlin.math.log
 
-class TestLogTxtActivity : AppCompatActivity() {
+/**
+ * 测试日志磁盘管理策略
+ */
+class TestLogTxtDiskActivity : AppCompatActivity() {
 
     companion object {
         private const val TAG = "TestLogTxtActivity"
@@ -20,37 +24,42 @@ class TestLogTxtActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_test_logtxt)
+        setContentView(R.layout.activity_test_logtxt_disk)
         initListener()
     }
 
     private fun initListener() {
-        findViewById<Button>(R.id.btn_set_default_logtxt_printer).setOnClickListener {
-            /**
-             *  [LogTxtDefaultPrinter] default init with  [LogTxtDefaultFormatStrategy] and [TimeLogDiskStrategyImpl]
-             */
-            val logger = Logger.Builder().setLogTxtPrinter(LogTxtDefaultPrinter()).build()
-            LogUtils.setLogger(logger)
-        }
         findViewById<Button>(R.id.btn_set_time_disk_strategy).setOnClickListener {
             /**
-             *  和 R.id.btn_set_default_logtxt_printer 一致
+             *  [LogTxtDefaultPrinter]默认使用[TimeLogDiskStrategyImpl]磁盘管理策略
              */
             val logger = Logger.Builder()
-                .setLogTxtPrinter(LogTxtDefaultPrinter(diskStrategy = TimeLogDiskStrategyImpl()))
+                .setLogTxtPrinter(
+                    LogTxtDefaultPrinter(
+                        diskStrategy = TimeLogDiskStrategyImpl()
+                    )
+                )
                 .build()
             LogUtils.setLogger(logger)
         }
 
         findViewById<Button>(R.id.btn_set_file_disk_strategy).setOnClickListener {
             val logger = Logger.Builder()
-                .setLogTxtPrinter(LogTxtDefaultPrinter(diskStrategy = FileLogDiskStrategyImpl()))
+                .setLogTxtPrinter(
+                    LogTxtDefaultPrinter(
+                        diskStrategy = FileLogDiskStrategyImpl()
+                    )
+                )
                 .build()
             LogUtils.setLogger(logger)
         }
         findViewById<Button>(R.id.btn_set_file_and_time_disk_strategy).setOnClickListener {
             val logger = Logger.Builder()
-                .setLogTxtPrinter(LogTxtDefaultPrinter(diskStrategy = FileAndTimeDiskStrategyImpl()))
+                .setLogTxtPrinter(
+                    LogTxtDefaultPrinter(
+                        diskStrategy = FileAndTimeDiskStrategyImpl()
+                    )
+                )
                 .build()
             LogUtils.setLogger(logger)
         }

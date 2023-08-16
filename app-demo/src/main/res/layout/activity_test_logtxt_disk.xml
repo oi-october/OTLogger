@@ -7,16 +7,12 @@
     <TextView android:id="@+id/title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Test LogTxt"
+        android:text="Test LogTxt Disk"
         android:gravity="center"
         android:textSize="20sp"
         android:textStyle="bold"
         android:layout_marginBottom="20dp"/>
 
-    <Button android:id="@+id/btn_set_default_logtxt_printer"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Set Default Logtxt Printer"/>
     <Button android:id="@+id/btn_set_time_disk_strategy"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

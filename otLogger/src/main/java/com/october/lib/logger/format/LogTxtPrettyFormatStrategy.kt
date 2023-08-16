@@ -1,11 +1,12 @@
 package com.october.lib.logger.format
 
 import com.october.lib.logger.LogLevel
+import com.october.lib.logger.common.PACKAGE_NAME
 import java.util.logging.Logger
 
 /***
- * 漂亮的Logcat日志输出格式
- *  参考：com.orhanobut.logger.PrettyFormatStrategy 的输出格式
+ * 漂亮的LogTxt日志输出格式:
+ * 2023-07-22 14:16:34.284 30117-30117/com.october. Logger D/TestLogger:
  *  ┌──────────────────────────
  *  │ Method stack history
  *  ├┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄
@@ -14,7 +15,7 @@ import java.util.logging.Logger
  *  │ Log message
  *  └──────────────────────────
  */
-class PrettyFormatStrategy :LogcatDefaultFormatStrategy(){
+class LogTxtPrettyFormatStrategy :LogTxtDefaultFormatStrategy(){
     companion object{
         private const val TOP_LEFT_CORNER = '┌'
         private const val BOTTOM_LEFT_CORNER = '└'
@@ -33,20 +34,34 @@ class PrettyFormatStrategy :LogcatDefaultFormatStrategy(){
         thr: Throwable?,
         param: Any?
     ): String {
-        val builder = StringBuilder(" \n")
-        builder.append("${TOP_BORDER}\n")
-        builder.append("${HORIZONTAL_LINE} ${getMethodTask()}     \n")
-        builder.append("${MIDDLE_BORDER}\n")
-        builder.append("${HORIZONTAL_LINE} Thread:${Thread.currentThread().name} (${Thread.currentThread().id})\n")
-        builder.append("${MIDDLE_BORDER}\n")
-        if(thr != null){
-            builder.append( "${HORIZONTAL_LINE} $msg \n")
-            builder.append(builderThrowableMsg(thr))
-        }else{
-            builder.append( "${HORIZONTAL_LINE} ${msg}\n" )
-        }
-        builder.append("${BOTTOM_BORDER}\n")
+        val builder = StringBuilder()
+        builder.append(getNowTimeStr()) //时间
+        builder.append(" ")
+        builder.append(getPid()) //Pid
+        builder.append("-")
+        builder.append(getTid()) //Tid
+        builder.append("/")
+        builder.append(PACKAGE_NAME) //包名
+        builder.append(" ")
+        builder.append(logLevel.describe) //日志级别
+        builder.append("/")
+        builder.append(tag)  //tag
+        builder.append(":")
+
+        val space = "    "
         builder.append("\n")
+        builder.append("${space}${TOP_BORDER}\n")
+        builder.append("${space}${HORIZONTAL_LINE} ${getMethodTask()}     \n")
+        builder.append("${space}${MIDDLE_BORDER}\n")
+        builder.append("${space}${HORIZONTAL_LINE} Thread:${Thread.currentThread().name} (${Thread.currentThread().id})\n")
+        builder.append("${space}${MIDDLE_BORDER}\n")
+        if(thr != null){
+            val errorMsg = getStackTraceStringWithPrefix(thr,"$space${HORIZONTAL_LINE}")
+            builder.append(errorMsg)
+        }else{
+            builder.append( "${space}${HORIZONTAL_LINE} ${msg}\n" )
+        }
+        builder.append("${space}${BOTTOM_BORDER}\n")
         return builder.toString()
     }
 

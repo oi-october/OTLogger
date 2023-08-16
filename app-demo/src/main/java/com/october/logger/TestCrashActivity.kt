@@ -9,6 +9,9 @@ import com.october.lib.logger.crash.DefaultCrashStrategyImpl
 import com.october.lib.logger.print.LogTxtDefaultPrinter
 import com.october.lib.logger.print.LogcatDefaultPrinter
 
+/**
+ * 测试异常捕获策略
+ */
 class TestCrashActivity :AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {

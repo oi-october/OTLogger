@@ -30,8 +30,8 @@
             </intent-filter>
 
         </activity>
-        <activity android:name=".TestLogcatActivity"/>
-        <activity android:name=".TestLogTxtActivity"/>
+        <activity android:name=".TestLogFormatActivity"/>
+        <activity android:name=".TestLogTxtDiskActivity"/>
         <activity android:name=".TestCrashActivity"/>
         <activity android:name=".TestSuggestLogcatActivity"/>
     </application>

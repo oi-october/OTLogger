@@ -16,7 +16,7 @@ import com.october.lib.logger.format.LogTxtDefaultFormatStrategy
 open class LogTxtDefaultPrinter(
     val printable: Boolean = true,
     val minLevel: LogLevel = LogLevel.V,
-    val formatStrategy: BaseFormatStrategy = LogTxtDefaultFormatStrategy(),
+    val formatStrategy: LogTxtDefaultFormatStrategy = LogTxtDefaultFormatStrategy(),
     val diskStrategy: BaseLogDiskStrategy = TimeLogDiskStrategyImpl()
 ) : BaseLogTxtPrinter() {
 

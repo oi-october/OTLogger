@@ -1,7 +1,7 @@
 # 说明文档
 
 ## 说明
- Android日志库，官方Log 高替版。允许同时把日志 **输出到Logcat **和 **保存到本地**。因其内部实现采用策略的设计模式，所以使用者可以根据自己的需求轻松定制该库的每个模块，包括日志输出格式、日志保存方式、异常捕获方式等。
+ Android日志库，官方Log 高替版。允许同时把日志 **输出到Logcat **和 **保存到本地**。因其内部实现采用策略的设计模式，所以使用者可以根据自己的需求轻松定制该库的每个模块，包括日志输出格式、日志保存方式、捕获异常日志等。
 
 ## 使用说明
 
@@ -21,20 +21,32 @@ allprojects {
 在项目中添加依赖：release 见最新版本号
 
 ```
- //eg:implementation 'com.github.oi-october:OTLogger:1.0.2'
+ //eg:implementation 'com.github.oi-october:OTLogger:1.0.3'
  implementation 'com.github.oi-october:OTLogger:release'
 ```
+
+#### 初始化Logger
+
+```
+val logger = Logger.Builder()
+    .setLogcatPrinter(LogcatDefaultPrinter())  //设置 logcat printer
+    .setLogTxtPrinter(LogTxtDefaultPrinter()) //设置 LogTxt printer
+    .setCrashStrategy(DefaultCrashStrategyImpl()) //设置 crash ,捕获异常日志
+    .build()
+LogUtils.setLogger(logger)
+```
+
+我们推荐您在使用`LogUtils`之前，先进行上诉初始化。它会给你带来如下的效果：
+
+- 默认Logger 会把日志打印到 Logcat 中，同时会保存日志到 storage/emulated/0/Android/data/packageName/files/log 下；
+
+- 默认Logger 会按与Log一致的格式输出到控制台和日志文件，并且日志文件仅仅保留7天，超过时间的日志文件自动删除。
+  如果希望定制日志输出格式、日志输出级别、日志保存文件夹地址，见**高级功能**。
+  <br/>
 
 #### 使用 QLlogger
 
 ```
-//初始化 OTLogger
-val logger = Logger.Builder()
-            .setCrashStrategy(DefaultCrashStrategyImpl(app)) //设置捕获策略，捕获到的异常正常输出到日志文件中
-            .build()
-LogUtils.setLogger(logger)
-
-//使用 QLlogger
 LogUtils.v(TAG, "V级别 日志")  
 LogUtils.d(TAG, "D级别 日志") 
 LogUtils.i(TAG, "I级别 日志")  
@@ -42,14 +54,11 @@ LogUtils.w(TAG, "W级别 日志")
 LogUtils.e(TAG, "E级别 日志")  
 ```
 
-- 默认Logger 打印日志到 Logcat的同时会保存日志到 storage/emulated/0/Android/data/packageName/files/log 下；
-- 默认Logger 会把日志按与Log一致的格式输出到控制台和日志文件，并且日志文件仅仅保留7天，超过时间的日志文件自动删除。
-如果希望定制日志输出格式、日志输出级别、日志保存文件夹地址，见**高级功能**。
+- 默认Logger 会把日志打印到 Logcat 中，但是并不会把日志输出到日志文件夹。
 
-## lib_logger 设计模型
+<br>
 
-<img name="默认Locat日志格式" src="rmRes/ic_structure2.jpg" width=1000 style="float:left;"/>    
-<br/>
+<br>
 
 ## 高级功能
 
@@ -121,7 +130,7 @@ LogUtils.setLogger(logger)
 
 - LogcatDefaultFormatStrategy：默认Logcat 日志输出格式；
 
- <img name="默认Locat日志格式" src="rmRes/ic_logcat_default_format.png" width=600 style="float:left;"/>
+ <img name="默认Locat日志格式" src="rmRes/ic_logcat_default_format.png" width=600/>
   <br>
 
   
@@ -133,7 +142,7 @@ LogUtils.setLogger(logger)
 
 - PrettyFormatStrategy : 漂亮的日志输出格式（仅仅合适Logcat , 不建议在日志文件中使用）
 
-  <img name="默认Locat日志格式" src="rmRes/ic_pretty_format.png" width=600 style="float:left;"/>
+  <img name="默认Locat日志格式" src="rmRes/ic_pretty_format.png" width=600/>
   <br>
 
 ### 日志文件管理策略

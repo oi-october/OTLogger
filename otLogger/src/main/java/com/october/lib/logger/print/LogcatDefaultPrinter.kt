@@ -13,7 +13,7 @@ import com.october.lib.logger.format.LogcatDefaultFormatStrategy
 open class LogcatDefaultPrinter(
     val printable: Boolean = true,
     val minLevel: LogLevel = LogLevel.V,
-    val formatStrategy: BaseFormatStrategy = LogcatDefaultFormatStrategy()
+    val formatStrategy: LogcatDefaultFormatStrategy = LogcatDefaultFormatStrategy()
 ) : BaseLogcatPrinter() {
 
     override fun isPrint(): Boolean {
