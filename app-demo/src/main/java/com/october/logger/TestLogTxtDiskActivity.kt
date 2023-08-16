@@ -47,9 +47,7 @@ class TestLogTxtDiskActivity : AppCompatActivity() {
         findViewById<Button>(R.id.btn_set_file_disk_strategy).setOnClickListener {
             val logger = Logger.Builder()
                 .setLogTxtPrinter(
-                    LogTxtDefaultPrinter(
-                        diskStrategy = FileLogDiskStrategyImpl()
-                    )
+                    LogTxtDefaultPrinter(diskStrategy = FileLogDiskStrategyImpl())
                 )
                 .setIsDebug(true)
                 .build()
@@ -58,9 +56,7 @@ class TestLogTxtDiskActivity : AppCompatActivity() {
         findViewById<Button>(R.id.btn_set_file_and_time_disk_strategy).setOnClickListener {
             val logger = Logger.Builder()
                 .setLogTxtPrinter(
-                    LogTxtDefaultPrinter(
-                        diskStrategy = FileAndTimeDiskStrategyImpl()
-                    )
+                    LogTxtDefaultPrinter(diskStrategy = FileAndTimeDiskStrategyImpl())
                 )
                 .setIsDebug(true)
                 .build()
@@ -77,5 +73,7 @@ class TestLogTxtDiskActivity : AppCompatActivity() {
         }
 
     }
+
+}
 
 }

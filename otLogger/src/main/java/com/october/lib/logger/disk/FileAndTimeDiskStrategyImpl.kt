@@ -12,7 +12,7 @@ import java.text.SimpleDateFormat
 /**
  * 文件+时间管理策略，同时具备[FileLogDiskStrategyImpl] 和 [TimeLogDiskStrategyImpl] 的部分特性
  *   - 默认日志文件夹最大可容纳 100M日志，超过[logDirectoryMaxStoreSizeOfMB]会按照时间顺序删除旧的日志，直到低于预定值
- *   - 默认文件名 默认文件名 log_年_月_日_时间段_时间戳.log
+ *   - 默认文件名 默认文件名 otLog_年_月_日_时间段_时间戳.log
  *     eg: otLog_2023_02_12_16_17_11123223423423.log
  *
  * 什么时候创建新的日志文件？
