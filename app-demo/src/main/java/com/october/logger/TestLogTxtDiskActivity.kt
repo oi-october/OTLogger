@@ -39,6 +39,7 @@ class TestLogTxtDiskActivity : AppCompatActivity() {
                         diskStrategy = TimeLogDiskStrategyImpl()
                     )
                 )
+                .setIsDebug(true)
                 .build()
             LogUtils.setLogger(logger)
         }
@@ -50,6 +51,7 @@ class TestLogTxtDiskActivity : AppCompatActivity() {
                         diskStrategy = FileLogDiskStrategyImpl()
                     )
                 )
+                .setIsDebug(true)
                 .build()
             LogUtils.setLogger(logger)
         }
@@ -60,6 +62,7 @@ class TestLogTxtDiskActivity : AppCompatActivity() {
                         diskStrategy = FileAndTimeDiskStrategyImpl()
                     )
                 )
+                .setIsDebug(true)
                 .build()
             LogUtils.setLogger(logger)
         }

@@ -11,6 +11,9 @@ public class LogUtils {
     public static void setLogger(@NonNull Logger myLog){
         Logger.Companion.setLogger(myLog);
     }
+    public static Logger getLogger(){
+        return Logger.Companion.getLogger();
+    }
 
     public static void v(String tag,@NonNull String msg){
         Logger.Companion.getLogger().println(LogLevel.V,tag,msg,null,null);

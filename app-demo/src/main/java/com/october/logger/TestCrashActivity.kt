@@ -21,6 +21,7 @@ class TestCrashActivity :AppCompatActivity() {
         val logger = Logger.Builder()
             .setLogTxtPrinter(LogTxtDefaultPrinter())
             .setCrashStrategy(DefaultCrashStrategyImpl())
+            .setIsDebug(true)
             .build()
         LogUtils.setLogger(logger)
 

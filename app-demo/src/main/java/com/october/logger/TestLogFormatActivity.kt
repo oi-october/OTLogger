@@ -32,6 +32,7 @@ class TestLogFormatActivity : AppCompatActivity() {
         val logger = Logger.Builder()
             .setLogcatPrinter(LogcatDefaultPrinter(formatStrategy = logcatFormatStrategy))
             .setLogTxtPrinter(LogTxtDefaultPrinter(formatStrategy = logtxtFormatStrategy))
+            .setIsDebug(true)
             .build()
         LogUtils.setLogger(logger)
 
@@ -47,6 +48,7 @@ class TestLogFormatActivity : AppCompatActivity() {
                     val logger = Logger.Builder()
                         .setLogcatPrinter(LogcatDefaultPrinter(formatStrategy = logcatFormatStrategy))
                         .setLogTxtPrinter(LogTxtDefaultPrinter(formatStrategy = logtxtFormatStrategy))
+                        .setIsDebug(true)
                         .build()
                     LogUtils.setLogger(logger)
                 }
@@ -57,6 +59,7 @@ class TestLogFormatActivity : AppCompatActivity() {
                     val logger = Logger.Builder()
                         .setLogcatPrinter(LogcatDefaultPrinter(formatStrategy = logcatFormatStrategy))
                         .setLogTxtPrinter(LogTxtDefaultPrinter(formatStrategy = logtxtFormatStrategy))
+                        .setIsDebug(true)
                         .build()
                     LogUtils.setLogger(logger)
                 }
