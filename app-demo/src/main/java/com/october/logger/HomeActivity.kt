@@ -4,9 +4,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-import com.october.lib.logger.LogUtils
-import com.october.lib.logger.Logger
-import com.october.lib.logger.print.LogcatDefaultPrinter
 
 class HomeActivity : AppCompatActivity() {
 
@@ -18,6 +15,9 @@ class HomeActivity : AppCompatActivity() {
     }
 
     private fun initListener(){
+        findViewById<View>(R.id.btn_suggest).setOnClickListener {
+            startActivity(Intent(this,TestSuggestLogcatActivity::class.java))
+        }
         findViewById<View>(R.id.btn_test_logcat_format).setOnClickListener {
             startActivity(Intent(this,TestLogcatActivity::class.java))
         }

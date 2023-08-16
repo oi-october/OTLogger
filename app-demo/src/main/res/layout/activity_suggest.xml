@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <Button android:id="@+id/btn_init_logger"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Logcat Pretty Format"/>
+
+    <Button android:id="@+id/print_log"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:layout_gravity="center_horizontal"
+        android:text="Print Log"/>
+
+</LinearLayout>
