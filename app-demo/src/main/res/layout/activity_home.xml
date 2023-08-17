@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:layout_height="match_parent">
+    <Button android:id="@+id/btn_suggest"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Suggest Use This"/>
+    <Button android:id="@+id/btn_test_log_format"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Test Log format"/>
+    <Button android:id="@+id/btn_test_logtxt_disk"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Test Logtxt Disk"/>
+    <Button android:id="@+id/btn_test_crash"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Test crash"/>
+</LinearLayout>

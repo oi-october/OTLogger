@@ -1,7 +1,7 @@
 # 说明文档
 
 ## 说明
- Android日志库，官方Log 高替版。允许同时把日志 **输出到Logcat **和 **保存到本地**。因其内部实现采用策略的设计模式，所以使用者可以根据自己的需求轻松定制该库的每个模块，包括日志输出格式、日志保存方式、异常捕获方式等。
+ Android日志库，官方Log 高替版。允许同时把日志 **输出到Logcat **和 **保存到本地**。因其内部实现采用策略的设计模式，所以使用者可以根据自己的需求轻松定制该库的每个模块，包括日志输出格式、日志保存方式、捕获异常日志等。
 
 ## 使用说明
 
@@ -21,20 +21,32 @@ allprojects {
 在项目中添加依赖：release 见最新版本号
 
 ```
- //eg:implementation 'com.github.oi-october:OTLogger:1.0.2'
+ //eg:implementation 'com.github.oi-october:OTLogger:1.0.3'
  implementation 'com.github.oi-october:OTLogger:release'
 ```
 
+#### 初始化Logger
+
+```kotlin
+val logger = Logger.Builder()
+    .setLogcatPrinter(LogcatDefaultPrinter())  //设置 logcat printer
+    .setLogTxtPrinter(LogTxtDefaultPrinter()) //设置 LogTxt printer
+    .setCrashStrategy(DefaultCrashStrategyImpl()) //设置 crash ,捕获异常日志
+    .build()
+LogUtils.setLogger(logger)
+```
+
+我们推荐您在使用`LogUtils`之前，先进行上诉初始化。它会给你带来如下的效果：
+
+- 默认Logger 会把日志打印到 Logcat 中，同时会保存日志到 storage/emulated/0/Android/data/packageName/files/log 下；
+
+- 默认Logger 会按与Log一致的格式输出到控制台和日志文件，并且日志文件仅仅保留7天，超过时间的日志文件自动删除。
+  如果希望定制日志输出格式、日志输出级别、日志保存文件夹地址，见**高级功能**。
+  <br/>
+
 #### 使用 QLlogger
 
-```
-//初始化 OTLogger
-val logger = Logger.Builder()
-            .setCrashStrategy(DefaultCrashStrategyImpl(app)) //设置捕获策略，捕获到的异常正常输出到日志文件中
-            .build()
-LogUtils.setLogger(logger)
-
-//使用 QLlogger
+```kotlin
 LogUtils.v(TAG, "V级别 日志")  
 LogUtils.d(TAG, "D级别 日志") 
 LogUtils.i(TAG, "I级别 日志")  
@@ -42,196 +54,223 @@ LogUtils.w(TAG, "W级别 日志")
 LogUtils.e(TAG, "E级别 日志")  
 ```
 
-- 默认Logger 打印日志到 Logcat的同时会保存日志到 storage/emulated/0/Android/data/packageName/files/log 下；
-- 默认Logger 会把日志按与Log一致的格式输出到控制台和日志文件，并且日志文件仅仅保留7天，超过时间的日志文件自动删除。
-如果希望定制日志输出格式、日志输出级别、日志保存文件夹地址，见**高级功能**。
-
-## lib_logger 设计模型
-
-<img name="默认Locat日志格式" src="rmRes/ic_structure.png" width=800 style="float:left;"/>    
-<br/>
+<br><br>
 
 ## 高级功能
 
-**几乎所有的日志行为都可以通过定制一个Logger来实现。**
+### 了解OTLogger 设计
 
-如果不想用默认的方式，可以自定义一个Logger 以便控制 Logcat 和 日志文件 的输出格式，如下:
+OTLogger 内部有两个打印机：`LogcatDefaultPrinter` 和 `LogTxtDefaultPrinter` 这两个打印机都继承于`BaseLogcatPrinter`。默认Logger 只设置了` LogcatDefaultPrinter `而没有设置` LogTxtDefaultPrinter`。
+
+你可以通过定制 `LogcatDefaultPrinter `以便控制打印到 Logcat 的日志，你也可以通过定制 `LogTxtDefaultPrinter`以便控制打印到 disk 的日志。
 
 ```kotlin
-//定制一个Logger
- val logger = Logger.Builder()
-         .setLogcatPrinter(LogcatDefaultPrinter()) //设置Logcat Printer
-         .setLogTxtPrinter(LogTxtDefaultPrinter()) //设置LogTxt Printer
-         .build()
-//设置使用该Logger
-LogUtils.setLogger(logger)
+/**
+ * 默认Loacat 打印机
+ * @property printable  是否打印日志到 logcat
+ * @property minLevel   最小日志输出级别
+ * @property formatStrategy 日志格式策略
+ */
+open class LogcatDefaultPrinter(
+    val printable: Boolean = true,
+    val minLevel: LogLevel = LogLevel.V,
+    val formatStrategy: LogcatDefaultFormatStrategy = LogcatDefaultFormatStrategy()
+) : BaseLogcatPrinter() 
+
+/**
+ * 默认日志文件打印机
+ * @property printable 是否写入到文件
+ * @property minLevel  最低输出日志
+ * @property formatStrategy 日志格式策略
+ * @property diskStrategy 文件管理策略
+ */
+open class LogTxtDefaultPrinter(
+    val printable: Boolean = true,
+    val minLevel: LogLevel = LogLevel.V,
+    val formatStrategy: LogTxtDefaultFormatStrategy = LogTxtDefaultFormatStrategy(),
+    val diskStrategy: BaseLogDiskStrategy = TimeLogDiskStrategyImpl()
+) : BaseLogTxtPrinter()
 ```
 
-### 配置Logcat打印机
 
-所有输出到Logcat的打印机都必须继承`BaseLogcatPrinter`, 目前已经实现Locat 打印机：
 
-- LogcatDefaultPrinter:  默认Locat打印机，输出日志格式和 Log 一致
-- LogcatCustomPrinter: 自定义Locat打印机，可以自行配置是否打印到Locat , 最大输出日志等级，日志格式(`BaseFormatStrategy`)等。
+### 1. 设置日志格式
+
+OTLogger已经实现两种日志格式，`DefaultFormatStragety` 和 `PrettyFormatStrategy` 。
+
+#### 使用`DefaultFormatStragety` 格式
+
+该日志格式和官方默认Log输出格式（旧版）保持一致，是**默认日志格式策略**：
 
 ```kotlin
 val logger = Logger.Builder()
-            .setLogcatPrinter( //设置Logcat Printer
-                LogcatCustomPrinter(
-                             true           //是否打印日志到 Logcat
-                            ,LogLevel.V     //最低输出日志级别
-                            ,LogcatDefaultFormatStrategy() //日志格式
-                )
-            )
-            .build()
-//设置使用该Logger
-LogUtils.setLogger(logger)
+                    //指定 Logcat 使用日志格式：LogcatDefaultFormatStrategy
+                   .setLogcatPrinter(LogcatDefaultPrinter(formatStrategy = LogcatDefaultFormatStrategy()))
+                    //指定 Logtxt 使用日志格式：LogTxtDefaultFormatStrategy
+                   .setLogTxtPrinter(LogTxtDefaultPrinter(formatStrategy = LogTxtDefaultFormatStrategy()))
+                   .build()
+LogUtils.setLogger(logger)                   
 ```
 
-### 配置日志文件打印机
+日志格式输出如下：
 
-所有输出到日志文件的打印机都必须继承 `BaseLogTxtPrinter`，目前已实现的日志文件打印机：
+![DefaultFormatStragety](rmRes/ic_logcat_default_format.png)
 
-- LogTxtDefaultPrinter：默认日志文件打印机，输出日志格式和Log一致，使用日志文件管理策略(`TimeLogDiskStrategyImpl`),按小时创建日志文件, 超过7天的日志自动删除;
+#### 使用 `PrettyFormatStrategy` 格式
 
-- LogTxtCustomPrinter：自定义日志文件打印机，可以自行配置是否打印到Logcat，最大输出日志等级，日志格式，文件管理策略。
+```
+val logger = Logger.Builder()
+                    //指定 Logcat 使用日志格式：LogcatPrettyFormatStrategy
+                   .setLogcatPrinter(LogcatDefaultPrinter(formatStrategy = LogcatPrettyFormatStrategy()))
+                    //指定 Logtxt 使用日志格式：LogTxtPrettyFormatStrategy
+                   .setLogTxtPrinter(LogTxtDefaultPrinter(formatStrategy = LogTxtPrettyFormatStrategy()))
+                   .build()
+LogUtils.setLogger(logger)  
+```
 
-  
+输出日志格式如下：
 
-  ``` kotlin
-  //定制一个Logger
-  val logger2 = Logger.Builder()
-        .setLogTxtPrinter(
-             LogTxtCustomPrinter(
-      								true    												//是否打印到日志文件
-      								,LogLevel.V      		       			//最低打印日志级别
-      								,LogTxtDefaultFormatStrategy()  //日志格式
-      								,TimeLogDiskStrategyImpl()      //日志文件管理策略
-    				)	
-  			).build()
-  //设置使用该Logger
+![DefaultFormatStragety](rmRes/ic_pretty_format.png)
+
+
+
+### 2. 设置磁盘管理模式
+
+OTLogger 默认有三种磁盘管理模式
+
+- `TimeLogDiskStrategyImpl` :按时间管理日志（**默认磁盘管理策略**）
+
+  - 默认每个日志文件保存七天，
+  - 默认按照小时创建日志文件
+  - 默认文件名 log_年_月_日_时间段.log 。 eg：otLog_2023_02_12_15_16.log ，这里的 15_16 表示该文件储存 15点到 16点的日志。
+
+  其构造方法如下：
+
+  ```kotlin
+  /**
+   * @param logDirectory 日志文件夹
+   * @param logKeepOfDay 日志保存天数
+   * @param logSegment 创建日志文件间隔，默认每个小时创建一份新的日志文件
+   */
+  open class TimeLogDiskStrategyImpl(
+      val logDirectory: String = defaultLogDir,
+      val logKeepOfDay: Int = 7,
+      val logSegment:LogTimeSegment= LogTimeSegment.ONE_HOUR
+  ) : BaseLogDiskStrategy() 
+  ```
+
+- `FileLogDiskStrategyImpl`:按照文件大小管理磁盘日志
+
+  - 默认每个日志文件5MB，参考[logFileStoreSizeOfMB]
+  - 默认日志文件夹最大可容纳 100M日志，超过[logDirectoryMaxStoreSizeOfMB]会按照时间顺序删除旧的日志，直到低于预定值
+  -  默认文件名 otLog\_年\_月\_日\_时\_分\_秒.log 。 eg: otLog_2023_02_12_16_28_56.log
+  - 每个日志写满了会创建一个新的日志文件
+  - 为了保护系统，以上都要当系统可用空闲空间大于最低限制的空闲空间[minFreeStoreOfMB]时，才会创建新的日志文件。
+
+  其构造方法如下：
+
+  ```kotlin
+  /**
+   * @param logDirectory 日志文件夹
+   * @param minFreeStoreOfMB 最小空闲空间（单位MB），当系统最小空闲存储空间低于该值时，不再创建新的日志文件
+   * @param logDirectoryMaxStoreSizeOfMB 日志文件夹最大的存储容量（单位MB），所有的日志文件加起来的大小不得操过该值
+   * @param logFileStoreSizeOfMB 每个日志文件容量（单位MB），只有上一个日志文件操过容量，才会创建下一个日志文件
+   */
+  open class FileLogDiskStrategyImpl(
+      val logDirectory: String = defaultLogDir,
+      val minFreeStoreOfMB: Int = 200,
+      val logDirectoryMaxStoreSizeOfMB: Int = 100,
+      val logFileStoreSizeOfMB:Int = 5
+  ) : BaseLogDiskStrategy()
+  ```
+
+  - `TimeLogDiskStrategyImpl`: 文件+时间管理策略，同时具备[FileLogDiskStrategyImpl] 和 [TimeLogDiskStrategyImpl] 的部分特性
+
+    - 默认日志文件夹最大可容纳 100M日志，超过[logDirectoryMaxStoreSizeOfMB]会按照时间顺序删除旧的日志，直到低于预定值；
+    - 默认文件名 默认文件名 otlog\_年\_月\_日\_时间段\_时间戳.log 。 eg: otLog_2023_02_12_16_17_11123223423423.log ；
+    - 每个日志写满了会创建一个新的日志文件，超过日志时间片段，会创建一个新的日志文件进行存储；
+    - 为了保护系统，以上都要当系统可用空闲空间大于最低限制的空闲空间[minFreeStoreOfMB]时，才会创建新的日志文件。
+
+    其构造函数如下：
+
+    ```kotlin
+    /**
+     * @param logDirectory 日志文件夹
+     * @param minFreeStoreOfMB 最小空闲空间（单位MB），当系统最小空闲存储空间低于该值时，不再创建新的日志文件
+     * @param logDirectoryMaxStoreSizeOfMB 日志文件夹最大的存储容量（单位MB），所有的日志文件加起来的大小不得操过该值
+     * @param logFileStoreSizeOfMB 每个日志文件容量（单位MB），只有上一个日志文件操过容量，才会创建下一个日志文件
+     * @param segment 创建日志文件间隔，默认每个小时创建一份新的日志文件
+     *
+     */
+    open class FileAndTimeDiskStrategyImpl(
+        val logDirectory: String = defaultLogDir,
+        val minFreeStoreOfMB: Int = 200,
+        val logDirectoryMaxStoreSizeOfMB: Int = 100,
+        val logFileStoreSizeOfMB: Int = 5,
+        val segment: LogTimeSegment = LogTimeSegment.ONE_HOUR
+    ) : BaseLogDiskStrategy()
+    ```
+
+  #### 设置磁盘管理策略
+
+  ```kotlin
+   val logger = Logger.Builder()
+                  .setLogTxtPrinter(
+                       LogTxtDefaultPrinter(diskStrategy = TimeLogDiskStrategyImpl()) //time
+                       // LogTxtDefaultPrinter(diskStrategy = FileLogDiskStrategyImpl())  //file
+                       // LogTxtDefaultPrinter(diskStrategy = FileAndTimeDiskStrategyImpl()) // file & time
+                   )
+                  .setIsDebug(true)
+                  .build()
   LogUtils.setLogger(logger)
   ```
 
-  
-
-### 日志格式策略
-
-每一个自定义打印机可以选择自己的日志格式，所有的日志格式都是继承`BaseFormatStrategy`实现的。默认已经实现的日志格式：	
-
-- LogcatDefaultFormatStrategy：默认Logcat 日志输出格式；
-
- <img name="默认Locat日志格式" src="rmRes/ic_logcat_default_format.png" width=600 style="float:left;"/>
-  <br>
-
-  
-
-- LogTxtDefaultFormatStrategy:默认日志文件输出格式；
-
-<img name="默认Locat日志格式" src="rmRes/ic_logtxt_default_format.png" width=600 style="float:left;"/>
-<br>
-
-- PrettyFormatStrategy : 漂亮的日志输出格式（仅仅合适Logcat , 不建议在日志文件中使用）
-
-  <img name="默认Locat日志格式" src="rmRes/ic_pretty_format.png" width=600 style="float:left;"/>
-  <br>
-
-### 日志文件管理策略
-
-日志写入到本地磁盘中，不能一直不管，必须需要一套文件管理机制去管理写入到磁盘的日志文件，避免日志过多或者日志混乱现象发生。
-
-每个日志管理策略都需要继承`BaseLogDiskStrategy` ，已实现的日志管理策略有：
-
-- TimeLogDiskStrategyImpl：按时间管理日志文件
-  - 默认按照小时创建日志文件
-  - 默认每个日志文件保存七天
-  - 默认文件名:  log\_年\_月\_日\_时间段.log 。eg：log_2023_02_12_15_16.log ，这里的 15_16 表示该文件储存 15点到16点的日志。
-
-- FileLogDiskStrategyImpl：按存储管理日志文件
-  -  默认每个日志文件5MB，参考[getLogFileMaxSizeOfMB]
-  -  默认日志文件夹最大可容纳 100M日志，超过[getLogDirMaxStoreOfMB]会按照时间顺序删除旧的日志，直到低于预定值
-  -  默认文件名 log_年_月_日_时_分_秒.log 。 eg: log_2023_02_12_16_28_56.log
-
--  FileAndTimeDiskStrategyImpl ：文件+时间管理策略，同时具备[FileLogDiskStrategyImpl] 和 [TimeLogDiskStrategyImpl] 的特性
-  -  默认日志文件夹最大可容纳 100M日志，超过[getLogDirMaxStoreOfMB]会按照时间顺序删除旧的日志，直到低于预定值。
-  -  默认文件名 默认文件名 log_年_月_日_时间段_创建时间戳.log 。eg: log_2023_02_12_16_17_1233644846.log
-
-```kotlin
-//我的日志管理策略
-val fileAndTimeDiskStrategyImpl = object : FileAndTimeDiskStrategyImpl() {
-  override fun getLogDir(): String {
-    return super.getLogDir()  //我的日志文件夹
-  }
-
-  override fun getMinFreeStoreOfMB(): Long {
-    return 100  //设置系统必须至少还有100MB才能继续创建日志文件
-  }
-
-  override fun getLogDirMaxStoreOfMB(): Long {
-    return 200  //设置日志文件夹最多容纳多少MB的日志
-  }
-
-  override fun getSegment(): BaseTimeLogDiskStrategy.LogTimeSegment {
-    return BaseTimeLogDiskStrategy.LogTimeSegment.ONE_HOUR //设置每次间隔一个小时创建一个日志文件
-  }
-
-  override fun getLogFileMaxSizeOfMB(): Long {
-    return 10  //设置每个日志文件最大是 10M ,超过10M自动创建下一个日志文件
-  }
-
-}
-
-/*val timeDiskStrategyImpl = object :TimeLogDiskStrategyImpl(){
-            override fun getLogDir(): String {
-                return super.getLogDir()  //我的日志文件夹
-            }
-
-            override fun getSegment(): LogTimeSegment {
-                return BaseTimeLogDiskStrategy.LogTimeSegment.THREE_HOURS //设置每次间隔2个小时创建一个日志文件
-            }
-        }*/
-
-/*val fileDiskStrategyImpl = object :FileLogDiskStrategyImpl(){
-            override fun getLogDir(): String {
-                return super.getLogDir()  //我的日志文件夹
-            }
-
-            override fun getLogFileMaxSizeOfMB(): Long {
-                return 10  //设置每个日志文件最大是 10M ,超过10M自动创建下一个日志文件
-            }
-
-            override fun getMinFreeStoreOfMB(): Long {
-                return 100  //设置系统必须至少还有100MB才能继续创建日志文件
-            }
-
-            override fun getLogDirMaxStoreOfMB(): Long {
-                return 200  //设置日志文件夹最多容纳多少MB的日志
-            }
-        }*/
 
 
-val logger = Logger.Builder()
-	   .setLogTxtPrinter(
-  			LogTxtCustomPrinter(//设置默认的LogTxt Printer
-    				true, LogLevel.V, LogTxtDefaultFormatStrategy()
-    				, fileAndTimeDiskStrategyImpl
-  			)
-		).build()
+### 3. 是否输出日志和日志级别
+
 ```
-
-### 异常捕获策略
-
-如果你希望发生异常的时候，把异常信息写入到日志文件方便定位。那么你可以配置异常捕获策略，默认异常捕获策略是空的，需要使用者自行配置。
-
-```kotlin
 val logger = Logger.Builder()
-		.setCrashStrategy(DefaultCrashStrategyImpl(app))//配置异常捕获策略
-		.build()
+                 //不输出日志到logcat
+                .setLogcatPrinter(LogcatDefaultPrinter(printable = false))  
+                //输出日志到disk
+                .setLogTxtPrinter(LogTxtDefaultPrinter(printable = true)) 
+                .build()
 LogUtils.setLogger(logger)
 ```
 
-  
+```
+val logger = Logger.Builder()
+                 //输出日志到logcat，最低打印日志级别是 VERBOSE
+                 .setLogcatPrinter(LogcatDefaultPrinter(printable = true, minLevel = LogLevel.V))  
+                 //输出日志到disk,最低打印日志级别是 INFO
+                .setLogTxtPrinter(LogTxtDefaultPrinter(printable = true, minLevel = LogLevel.I))
+                .build()
+LogUtils.setLogger(logger)
+```
 
-### 拓展
 
-以上所有的策略囊括了日志打印的所有逻辑，如果你发现上面的策略不合适你的项目，你可以继承并重写该策略。
+
+### 4. 捕获异常并输出crash 日志
+
+```kotlin
+val logger = Logger.Builder()
+                .setCrashStrategy(DefaultCrashStrategyImpl()) //设置 crash ,捕获异常日志
+                .build()
+LogUtils.setLogger(logger)
+```
+
+通过上面配置，可以捕获app异常，并且把异常信息打印到Logcat 或者 Disk
+
+
+
+## 拓展
+
+更多文章：[OTLogger 日志库：轻松定制属于你的日志](https://juejin.cn/post/7264780458738106409)
+
+
+
+
+
+
+

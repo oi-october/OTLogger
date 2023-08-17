@@ -29,17 +29,17 @@ open class LogTxtDefaultFormatStrategy: BaseFormatStrategy(){
     ): String {
         val builder = StringBuilder()
         builder.append(getNowTimeStr()) //时间
-        builder.append(SPACE)
+        builder.append(" ")
         builder.append(getPid()) //Pid
-        builder.append(CROSS_BAR)
+        builder.append("-")
         builder.append(getTid()) //Tid
         builder.append("/")
         builder.append(PACKAGE_NAME) //包名
-        builder.append(SPACE)
+        builder.append(" ")
         builder.append(logLevel.describe) //日志级别
         builder.append("/")
         builder.append(tag)  //tag
-        builder.append(COLON)
+        builder.append(":")
         builder.append(msg) //日志
         builder.append(NEW_LINE)
         if(thr !=null){

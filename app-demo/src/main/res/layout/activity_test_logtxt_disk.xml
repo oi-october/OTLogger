@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:layout_height="match_parent">
+
+    <TextView android:id="@+id/title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Test LogTxt Disk"
+        android:gravity="center"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="20dp"/>
+
+    <Button android:id="@+id/btn_set_time_disk_strategy"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Set Time Disk Strategy"/>
+    <Button android:id="@+id/btn_set_file_disk_strategy"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Set File Disk Strategy"/>
+    <Button android:id="@+id/btn_set_file_and_time_disk_strategy"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Set File And Time Disk Strategy"/>
+
+    <Button android:id="@+id/print_log"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:layout_gravity="center_horizontal"
+        android:text="Print Log"/>
+
+</LinearLayout>
