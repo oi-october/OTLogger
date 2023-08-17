@@ -75,5 +75,3 @@ class TestLogTxtDiskActivity : AppCompatActivity() {
     }
 
 }
-
-}
