@@ -53,7 +53,7 @@ open class FileLogDiskStrategyImpl(
         } else {
             //find last log file
             val fileArray = File(getLogDir()).listFiles(FilenameFilter { _, name ->
-                return@FilenameFilter(name.startsWith(LogPrefix) && name.endsWith(LogSuffix))
+                return@FilenameFilter(name.startsWith(getLogPrefix()) && name.endsWith(getLogSuffix()))
             })
 
             if(!fileArray.isNullOrEmpty()){
@@ -122,7 +122,7 @@ open class FileLogDiskStrategyImpl(
         }
         val logFileArray = logDirFile.listFiles(FilenameFilter { _, name ->
             val name = name.trim()
-            if (name.startsWith(LogPrefix) && name.endsWith(LogSuffix)) {
+            if (name.startsWith(getLogPrefix()) && name.endsWith(getLogSuffix())) {
                 return@FilenameFilter true
             }
             return@FilenameFilter false
@@ -171,7 +171,7 @@ open class FileLogDiskStrategyImpl(
      */
     private fun getFileName(logTime: Long): String {
         val logTimeStr = logFileNameDateFormat.format(logTime)
-        return "${LogPrefix}${logTimeStr}${LogSuffix}"
+        return "${getLogPrefix()}${logTimeStr}${getLogSuffix()}"
     }
 
     private class FilePathCache(val logFileMaxSize: Long, val filePath: String) {

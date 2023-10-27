@@ -146,7 +146,7 @@ open class TimeLogDiskStrategyImpl(
         if (start.length == 1) start = "0${start}"
         var end = "${section.second}"
         if (end.length == 1) end = "0${end}"
-        return "${LogPrefix}${logTimeStr}_${start}_${end}${LogSuffix}"
+        return "${getLogPrefix()}${logTimeStr}_${start}_${end}${getLogSuffix()}"
     }
 
     private class FilePathCache(val startTime: Long, val endTime: Long, val filePath: String) {

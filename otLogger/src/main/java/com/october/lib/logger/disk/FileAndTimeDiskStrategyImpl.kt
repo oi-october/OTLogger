@@ -61,7 +61,7 @@ open class FileAndTimeDiskStrategyImpl(
             val logFileNamePrefix = getFileNamePrefix(printTime, section.first)
             val fileArray = File(getLogDir()).listFiles(FilenameFilter { _, name ->
                 val isFilter =
-                    name.startsWith(LogPrefix) && name.endsWith(LogSuffix) && name.startsWith(
+                    name.startsWith(getLogPrefix()) && name.endsWith(getLogSuffix()) && name.startsWith(
                         logFileNamePrefix
                     )
                 return@FilenameFilter isFilter
@@ -120,6 +120,7 @@ open class FileAndTimeDiskStrategyImpl(
         val builder = StringBuilder()
         builder.append(LOG_HEARD_INFO)
         builder.append("all store size =${getTotalStore(getLogDir()) / 1024f / 1024f}MB")
+        builder.append("\n")
         builder.append("free store size = ${getFreeStore(getLogDir()) / 1024f / 1024f}MB")
         builder.append("\n\n")
         return builder.toString()
@@ -139,7 +140,7 @@ open class FileAndTimeDiskStrategyImpl(
      *   otLog_2023_11_20_11_12_2131212312321.log
      */
     private fun getFileName(logTime: Long, section: Pair<Int, Int>): String {
-        return "${getFileNamePrefix(logTime, section)}_${logTime}${LogSuffix}"
+        return "${getFileNamePrefix(logTime, section)}_${logTime}${getLogSuffix()}"
     }
 
     /**
@@ -152,7 +153,7 @@ open class FileAndTimeDiskStrategyImpl(
         if (start.length == 1) start = "0${start}"
         var end = "${section.second}"
         if (end.length == 1) end = "0${end}"
-        return "${LogPrefix}${logTimeStr}_${start}_${end}"
+        return "${getLogPrefix()}${logTimeStr}_${start}_${end}"
     }
 
 

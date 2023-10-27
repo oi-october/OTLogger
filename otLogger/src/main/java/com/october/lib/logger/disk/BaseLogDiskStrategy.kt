@@ -12,8 +12,8 @@ import java.io.File
 abstract class BaseLogDiskStrategy {
 
     companion object{
-        const val LogPrefix = "otLog_"
-        const val LogSuffix = ".log"
+        private const val LogPrefix = "otLog_"
+        private const val LogSuffix = ".log"
 
         //default log dir
         internal val defaultLogDir by lazy {
@@ -87,6 +87,21 @@ abstract class BaseLogDiskStrategy {
             }
         }
     }
+
+    /**
+     * 获得日志前缀
+     */
+    open fun getLogPrefix():String{
+        return LogPrefix
+    }
+
+    /**
+     * 获得日志后缀
+     */
+    open fun getLogSuffix():String{
+        return LogSuffix
+    }
+
 
     /**
      * 获取日志所在文件夹
