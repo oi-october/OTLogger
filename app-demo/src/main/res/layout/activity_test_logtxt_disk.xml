@@ -13,6 +13,24 @@
         android:textStyle="bold"
         android:layout_marginBottom="20dp"/>
 
+    <RadioGroup android:id="@+id/radio_group"
+        android:layout_width="match_parent"
+        android:orientation="horizontal"
+        android:layout_height="wrap_content">
+        <RadioButton android:id="@+id/btn_compress"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="compress"/>
+        <RadioButton android:id="@+id/btn_no_compress"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:layout_weight="1"
+            android:text="no compress"/>
+    </RadioGroup>
+
+
     <Button android:id="@+id/btn_set_time_disk_strategy"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

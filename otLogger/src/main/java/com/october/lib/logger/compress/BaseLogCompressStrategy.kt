@@ -40,8 +40,8 @@ abstract class BaseLogCompressStrategy : HandlerThread {
             logList.forEach {
                 val logZip = compressOne(diskStrategy,it)
                 if(logZip != null && logZip.isFile && isDeleteOriginal()){
-                    debugLog("删除日志文件:${logZip.absolutePath}")
-                    logZip?.deleteFile()
+                    debugLog("删除日志文件:${it.absolutePath}")
+                    it?.deleteFile()
                 }
             }
 

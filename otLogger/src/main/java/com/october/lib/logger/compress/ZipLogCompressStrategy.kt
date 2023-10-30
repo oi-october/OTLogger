@@ -11,16 +11,18 @@ import java.io.FileFilter
  */
 class ZipLogCompressStrategy : BaseLogCompressStrategy() {
 
-    companion object{
+    companion object {
         private const val ZIP_SUFFIX = ".zip"
     }
 
     override fun getCompressLogs(diskStrategy: BaseLogDiskStrategy): List<File> {
         val logDir = diskStrategy.getLogDir() //获得文件夹路径
-        val currentLogName = File(diskStrategy.getCurrentLogFilePath()).name  //获得文件名称
+        val currentLogName = File(diskStrategy.getCurrentLogFilePath()).name  //获得当前正在写入的日志文件名称
 
         val files = File(logDir).listFiles(FileFilter { logFile ->
-            if (logFile.name < currentLogName) {
+            if (logFile.name < currentLogName
+                && (logFile.name.startsWith(diskStrategy.getLogPrefix()) && logFile.name.endsWith(diskStrategy.getLogSuffix()))
+            ) {
                 return@FileFilter true
             }
             return@FileFilter false
@@ -34,7 +36,8 @@ class ZipLogCompressStrategy : BaseLogCompressStrategy() {
         fileName = fileName.substring(0, fileName.lastIndexOf("."))
         val zipFileName = "${fileName}${ZIP_SUFFIX}"
         try {
-            val zipFile = logFile.zip(logFile.parentFile.absolutePath + File.separator + zipFileName)
+            val zipFile =
+                logFile.zip(logFile.parentFile.absolutePath + File.separator + zipFileName)
             return zipFile
         } catch (e: Exception) {
             debugLog("压缩log异常:${fileName}")
