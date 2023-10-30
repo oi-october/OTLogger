@@ -6,6 +6,7 @@ import com.october.lib.logger.LogLevel
 import com.october.lib.logger.common.LOG_HEARD_INFO
 import com.october.lib.logger.util.appCtx
 import com.october.lib.logger.util.debugLog
+import com.october.lib.logger.util.deleteFile
 import com.october.lib.logger.util.errorLog
 import java.io.File
 import java.io.FilenameFilter
@@ -25,11 +26,12 @@ import java.util.*
 open class TimeLogDiskStrategyImpl(
     val logDirectory: String = defaultLogDir,
     val logKeepOfDay: Int = 7,
-    val logSegment:LogTimeSegment= LogTimeSegment.ONE_HOUR
+    val logSegment: LogTimeSegment = LogTimeSegment.ONE_HOUR
 ) : BaseLogDiskStrategy() {
 
     //日志文件名时间格式
     private val logFileNameDateFormat = SimpleDateFormat("yyyy_MM_dd")
+
     //当前文件路径
     @Volatile
     private var currentFilePathCache: FilePathCache? = null
@@ -56,7 +58,8 @@ open class TimeLogDiskStrategyImpl(
         val logHoldDuration = getLogHoldDurationOfDay() * 24 * 60 * 60 * 1000L
         val expirationTime = printTime - logHoldDuration  //小于该时间都是过期日志
         val expirationFileSection = getLogSection(expirationTime, getSegment())
-        val expirationFileName = getFileName(expirationTime, expirationFileSection.first) //在该日志时间之前的日志都是过去的
+        val expirationFileName =
+            getFileName(expirationTime, expirationFileSection.first) //在该日志时间之前的日志都是过去的
         debugLog("the log before [${expirationFileName}] is invalid")
         val logDirFile = File(getLogDir())
         // log dir exist？ read and write permission?
@@ -65,7 +68,9 @@ open class TimeLogDiskStrategyImpl(
             return false
         }
         val expirationFiles = logDirFile.listFiles(FilenameFilter { _, name ->
-            if (expirationFileName > name) {
+            val isLogCompressFile = getLogCompressStrategy()?.isCompressFile(File(getLogDir() + File.separator + name)) == true //是否是压缩文件
+            val isLogFile= name.startsWith(getLogPrefix()) && name.endsWith(getLogSuffix())//是否是日志文件
+            if (expirationFileName > name &&  ( isLogCompressFile || isLogFile ) ) {
                 debugLog("invalid log= ${name}")
                 return@FilenameFilter true
             } else {
@@ -75,7 +80,7 @@ open class TimeLogDiskStrategyImpl(
         })
         if (expirationFiles.isNullOrEmpty()) return true
         expirationFiles.forEach {
-            it.delete() //删除过期日志文件
+            it.deleteFile() //删除过期日志文件
         }
         return true
     }

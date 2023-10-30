@@ -8,7 +8,9 @@ import android.util.Log
 import com.october.lib.logger.LogLevel
 import com.october.lib.logger.disk.BaseLogDiskStrategy
 import com.october.lib.logger.format.BaseFormatStrategy
+import com.october.lib.logger.util.create
 import com.october.lib.logger.util.debugLog
+import com.october.lib.logger.util.isExist
 import java.io.File
 
 abstract class BaseLogTxtPrinter:IPrinter{
@@ -79,7 +81,7 @@ open class WriteHandler(
         val parentFile = logFile.parentFile
         try {
             //创建父文件夹
-            if (!parentFile.exists() || !parentFile.isDirectory) {
+            if (!parentFile.isExist() || !parentFile.isDirectory) {
                 val isSuccess = parentFile.mkdirs()
                 if (!isSuccess) {
                     debugLog("无法创建日志文件夹:" + parentFile.absolutePath)
@@ -87,7 +89,7 @@ open class WriteHandler(
                 }
             }
             //创建文件
-            if (!logFile.exists() || !logFile.isFile) {
+            if (!logFile.isExist() || !logFile.isFile) {
                 val isCreateSuccess = logFile.createNewFile()
                 if (!isCreateSuccess ) {
                     debugLog("无法创建日志文件:" + logFilePath)

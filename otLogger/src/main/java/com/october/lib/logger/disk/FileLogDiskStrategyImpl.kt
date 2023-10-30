@@ -5,6 +5,7 @@ import com.october.lib.logger.common.LOG_HEARD_INFO
 import com.october.lib.logger.common.getFreeStore
 import com.october.lib.logger.common.getTotalStore
 import com.october.lib.logger.util.debugLog
+import com.october.lib.logger.util.deleteFile
 import com.october.lib.logger.util.errorLog
 import java.io.File
 import java.io.FilenameFilter
@@ -122,7 +123,9 @@ open class FileLogDiskStrategyImpl(
         }
         val logFileArray = logDirFile.listFiles(FilenameFilter { _, name ->
             val name = name.trim()
-            if (name.startsWith(getLogPrefix()) && name.endsWith(getLogSuffix())) {
+            val isLogCompressFile = getLogCompressStrategy()?.isCompressFile(File(getLogDir() + File.separator + name)) == true //是否是压缩文件
+            val isLogFile = name.startsWith(getLogPrefix()) && name.endsWith(getLogSuffix())//是否是日志文件
+            if (isLogCompressFile || isLogFile) {
                 return@FilenameFilter true
             }
             return@FilenameFilter false
@@ -155,7 +158,7 @@ open class FileLogDiskStrategyImpl(
         }
         for (j in 0 until outSizeIndex + 1) {
             val logFile = logList.get(j)
-            val isSuccess = logFile.delete()
+            val isSuccess = logFile.deleteFile()
             debugLog("delete log file(${logFile.name}) success? ${isSuccess}")
         }
         debugLog("after clear invalid log file，log dir size=${size / 1024f / 1024f}MB")

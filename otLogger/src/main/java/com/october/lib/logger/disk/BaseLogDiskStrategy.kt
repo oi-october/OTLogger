@@ -1,6 +1,7 @@
 package com.october.lib.logger.disk
 
 import com.october.lib.logger.LogLevel
+import com.october.lib.logger.compress.BaseLogCompressStrategy
 import com.october.lib.logger.util.appCtx
 import com.october.lib.logger.util.debugLog
 import com.october.lib.logger.util.errorLog
@@ -30,6 +31,10 @@ abstract class BaseLogDiskStrategy {
     @Volatile
     private var isLogDirAvailable = false
     private var currentLogFilePath:String? = null
+
+    //压缩策略
+    private var compressStrategy:BaseLogCompressStrategy? = null
+
 
     internal fun internalGetLogPrintPath(printTime: Long,logLevel: LogLevel, logBody: String?, bodySize: Long):String?{
         if(!isLogDirAvailable){  // check log dir until it is available
@@ -73,6 +78,7 @@ abstract class BaseLogDiskStrategy {
             var path:String? = createLogFile(printTime,logLevel,logBody)
             appendLogHead2NewFile(logHeadInfo(),path) //write log head info into log file
             setCurrentFilePath(path)
+            compressStrategy?.compressLog(this,getLogDir()) // compress log file
             return getCurrentLogFilePath()
         }
     }
@@ -149,6 +155,13 @@ abstract class BaseLogDiskStrategy {
         currentLogFilePath = path
     }
 
+    fun setLogCompressStrategy(compressStrategy: BaseLogCompressStrategy?){
+        this.compressStrategy = compressStrategy
+    }
+
+    fun getLogCompressStrategy():BaseLogCompressStrategy?{
+        return compressStrategy
+    }
 
 }
 
