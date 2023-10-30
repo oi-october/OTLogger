@@ -4,10 +4,13 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
+import com.october.lib.logger.LogLevel
 import com.october.lib.logger.LogUtils
 import com.october.lib.logger.Logger
 import com.october.lib.logger.crash.DefaultCrashStrategyImpl
 import com.october.lib.logger.disk.FileAndTimeDiskStrategyImpl
+import com.october.lib.logger.format.LogcatDefaultFormatStrategy
+import com.october.lib.logger.print.IPrinter
 import com.october.lib.logger.print.LogTxtDefaultPrinter
 import com.october.lib.logger.print.LogcatDefaultPrinter
 
@@ -44,5 +47,28 @@ class TestSuggestLogcatActivity :AppCompatActivity(){
 
 
     }
+
+
+  /*
+   //自定义日志打印机，上传到云
+   class LogcatCloudPrinter:IPrinter{
+        //日志格式
+        private val formatStrategy =  LogcatDefaultFormatStrategy()
+        override fun print(
+            logLevel: LogLevel,
+            tag: String?,
+            msg: String?,
+            thr: Throwable?,
+            param: Any?
+        ) {
+            if(logLevel == LogLevel.E){
+                //日志信息
+                val logInfo = formatStrategy.format(logLevel, tag, msg, thr, param)
+                // todo 上传 ${logInfo} 到云端
+
+            }
+        }
+    }*/
+
 
 }

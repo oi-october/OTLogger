@@ -50,8 +50,8 @@ internal fun getTotalStore(logDir: String): Long {
  */
 internal fun getFreeStore(logDir: String): Long {
     val sf = StatFs(logDir)
-    val blockSize = sf.availableBlocksLong
-    val blockCount = sf.blockCountLong
+    val blockSize = sf.blockSizeLong
+    val blockCount = sf.availableBlocksLong
     val size = blockSize * blockCount
     return size
 }

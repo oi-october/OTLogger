@@ -9,7 +9,7 @@
 
 在 root/build.gradle 中添加
 
-```
+```groovy
 allprojects {
           repositories {
 		...
@@ -20,7 +20,7 @@ allprojects {
 
 在项目中添加依赖：release 见最新版本号
 
-```
+```groovy
  //eg:implementation 'com.github.oi-october:OTLogger:1.0.3'
  implementation 'com.github.oi-october:OTLogger:release'
 ```
@@ -225,11 +225,45 @@ OTLogger 默认有三种磁盘管理模式
   LogUtils.setLogger(logger)
   ```
 
+### 3. 设置压缩策略
 
+OTLogger 打印到disk的日志文件默认是不压缩的。在`v1.2.0`版本以后，添加了日志压缩策略，其压缩规则是：
 
-### 3. 是否输出日志和日志级别
+- 每当创建一个新的日志文件，遍历所有旧的日志文件进行压缩；
 
+- 当前正在写入的日志文件不压缩；
+
+当前已经实现的压缩策略：
+
+```kotlin
+/**
+ * 压缩日志文件成为zip包
+ */
+class ZipLogCompressStrategy : BaseLogCompressStrategy() 
 ```
+
+所有的压缩策略有必须继承于 `BaseLogCompressStrategy`。如果有需要，你可以实现自己的压缩策略。
+
+使用压缩策略：
+
+压缩策略必须结合磁盘管理策略一起使用。比如：
+
+```kotlin
+//案例1：
+val diskStrategy = FileAndTimeDiskStrategyImpl().also {
+                			it.setLogCompressStrategy(logCompressStrategy) //设置压缩策略
+                   }
+//案例2：
+val diskStrategy= TimeLogDiskStrategyImpl().also {
+                			it.setLogCompressStrategy(logCompressStrategy) //设置压缩策略
+            			}
+```
+
+
+
+### 4. 是否输出日志和日志级别
+
+```kotlin
 val logger = Logger.Builder()
                  //不输出日志到logcat
                 .setLogcatPrinter(LogcatDefaultPrinter(printable = false))  
@@ -239,7 +273,7 @@ val logger = Logger.Builder()
 LogUtils.setLogger(logger)
 ```
 
-```
+```kotlin
 val logger = Logger.Builder()
                  //输出日志到logcat，最低打印日志级别是 VERBOSE
                  .setLogcatPrinter(LogcatDefaultPrinter(printable = true, minLevel = LogLevel.V))  
@@ -251,7 +285,7 @@ LogUtils.setLogger(logger)
 
 
 
-### 4. 捕获异常并输出crash 日志
+### 5. 捕获异常并输出crash 日志
 
 ```kotlin
 val logger = Logger.Builder()
@@ -261,6 +295,42 @@ LogUtils.setLogger(logger)
 ```
 
 通过上面配置，可以捕获app异常，并且把异常信息打印到Logcat 或者 Disk
+
+
+
+### 6. 添加自定义打印机`IPrinter`
+
+​	OTLogger 在 `v1.2.0` 版本以后不再局限于只有 `LogcatPrinter`和 `LogTxtPrinter` 两种日志打印机。大家可以根据自己的需求自定义打印机，以便可以把日志打印到喜欢的位置。
+
+自定义打印机流程：
+
+- 继承 `IPrinter`实现打印机，具体实现流程可参考`LogcatDefaultPrinter；
+
+  例如下面案例：上传特定异常日志到云端
+
+  ```kotlin
+  class LogcatCloudPrinter:IPrinter{
+    //日志格式
+    private val formatStrategy =  LogcatDefaultFormatStrategy()
+    override fun print(logLevel: LogLevel,tag: String?,msg: String?,thr: Throwable?,param: Any?) {
+        if(logLevel == LogLevel.E){
+          //日志信息
+          val logInfo = formatStrategy.format(logLevel, tag, msg, thr, param)
+          // todo 上传 ${logInfo} 到云端
+          // ...
+        }
+    }
+  }
+  ```
+
+- 添加自定义打印机到 Logger
+
+  ```kotlin
+  val logger = Logger.Builder()
+                     .addExtraPrinter(LogcatCloudPrinter()) //添加自定义打印机
+                     .build()
+  LogUtils.setLogger(logger)
+  ```
 
 
 

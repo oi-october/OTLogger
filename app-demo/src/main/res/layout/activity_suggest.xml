@@ -7,7 +7,7 @@
     <Button android:id="@+id/btn_init_logger"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Logcat Pretty Format"/>
+        android:text="Logger Init"/>
 
     <Button android:id="@+id/print_log"
         android:layout_width="match_parent"

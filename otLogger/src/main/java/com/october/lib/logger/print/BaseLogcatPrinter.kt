@@ -5,6 +5,7 @@ import com.october.lib.logger.LogLevel
 import com.october.lib.logger.format.BaseFormatStrategy
 import com.october.lib.logger.util.debugLog
 
+@SuppressWarnings("LongLogTag")
 abstract class BaseLogcatPrinter:IPrinter{
 
     override fun print(logLevel: LogLevel, tag:String?, msg:String?, thr: Throwable?, param:Any?){
